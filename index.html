@@ -1,0 +1,42 @@
+<html>
+	<head>
+		<title>Log Analyser</title>
+	</head>
+	<body>
+		<form action="showenv.cgi" method="POST">
+		<fieldset>
+			<legend>Search criteria:</legend>
+			Range of days: from <input type="TEXT" name="cdate1"> to <input type="TEXT" name="cdate2"> Format: 16/Feb/2015 <br/>
+			Contain IP/name: <input type="TEXT" name="cname"> <br/>
+			Used protocol: <input type="TEXT" name="cprotocol"> <br/>
+			Used Top-Level-Domain: <input type="TEXT" name="ctld"> <br/>
+			Referer HTTP: <input type="TEXT" name="cref">
+		</fieldset>
+		<fieldset>
+			<legend>What statistics do you want?</legend>
+			<input type="checkbox" name="stat" value="sname">IP address (name) of client<br/>
+			<input type="checkbox" name="stat" value="sdate">date<br/>
+			<input type="checkbox" name="stat" value="stime">time<br/>
+			<input type="checkbox" name="stat" value="sprotocol">used protocol<br/>
+			<input type="checkbox" name="stat" value="sfile">file ending of requested file<br/>
+			<input type="checkbox" name="stat" value="sget">GET/POST<br/>
+			<input type="checkbox" name="stat" value="sstatus">status codes<br/>
+			<input type="checkbox" name="stat" value="ssize">size of returned object<br/>
+			<input type="checkbox" name="stat" value="sreferer">Referer HTTP (up to second /)<br/>
+			<input type="checkbox" name="stat" value="sprogram">program (e.g. browser)<br/>
+			<input type="checkbox" name="stat" value="sos">OS<br/>
+			<input type="checkbox" name="stat" value="slanguage">language used by program<br/>
+			<input type="checkbox" name="stat" value="stld">Top-Level-Domain<br/>
+		</fieldset>
+		<select name="log">
+			<option value="large">large.log</option>
+			<option value="medium">medium.log</option>
+			<option value="micro_1" selected>micro_1.log</option>
+			<option value="micro_2">micro_2.log</option>
+			<option value="small">small.log</option>
+		</select>
+		<input type="SUBMIT"/>
+		<input type="RESET"/>
+		</form>
+	</body>
+</html>
