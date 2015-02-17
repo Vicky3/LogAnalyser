@@ -24,7 +24,6 @@ LOG_DIRECTORY="../logs/"
 
 def giveArgumentsToParser(params):
     """
-
     Reads in the arguments from the website. Checks if the dates have valid
     format. Builds a logParser that knows which arguments are given.
 
@@ -81,18 +80,12 @@ def giveArgumentsToParser(params):
     #check for requested categories / statistics to show
     categories=[]
     #mapping of strings to kind of statistic
-    mapping={"sname":logParser.NAME,
-             "sdate":logParser.DATE,
-             "stime":logParser.TIME,
-             "sprotocol":logParser.PROTOCOL,
-             "sfile":logParser.FILE,
-             "sget":logParser.RECTYPE,
-             "sstatus":logParser.STATUS,
-             "ssize":logParser.SIZE,
-             "sreferer":logParser.REF,
-             "sprogram":logParser.PROGRAM,
-             "sos":logParser.OS,
-             "slanguage":logParser.LANG,
+    mapping={"sname":logParser.NAME, "sdate":logParser.DATE,
+             "stime":logParser.TIME, "sprotocol":logParser.PROTOCOL,
+             "sfile":logParser.FILE, "sget":logParser.RECTYPE,
+             "sstatus":logParser.STATUS, "ssize":logParser.SIZE,
+             "sreferer":logParser.REF, "sprogram":logParser.PROGRAM,
+             "sos":logParser.OS, "slanguage":logParser.LANG,
              "stld":logParser.TLD}
     if "stat" in params:
         if isinstance(params["stat"],list):
@@ -105,6 +98,68 @@ def giveArgumentsToParser(params):
     parser.addCategories(categories)
     return parser
 
+def makeSVGs(dataToPlot):
+    """
+    Builds SVG images. Depending on the category either a pie chart or a bar
+    chart is created. Also depending on the category a maximum ofwedges/bars
+    is defined.
+
+    Parameters
+    ----------
+    dataToPlot : dict of dicts
+                 the parsing results
+
+    Returns
+    -------
+    dict
+        a dictionary containing titles for the plots in keys and the svg
+        image as StringIO in values
+    """
+    #mapping which type of plot is for which category
+    chart={logParser.NAME:svgCreator.createPieChart,
+           logParser.PROTOCOL:svgCreator.createPieChart,
+           logParser.FILE:svgCreator.createPieChart,
+           logParser.RECTYPE:svgCreator.createPieChart,
+           logParser.STATUS:svgCreator.createPieChart,
+           logParser.REF:svgCreator.createPieChart,
+           logParser.PROGRAM:svgCreator.createPieChart,
+           logParser.OS:svgCreator.createPieChart,
+           logParser.LANG:svgCreator.createPieChart,
+           logParser.TLD:svgCreator.createPieChart,
+           logParser.DATE:svgCreator.createBarChart,
+           logParser.TIME:svgCreator.createBarChart,
+           logParser.SIZE:svgCreator.createBarChart}
+
+    #mapping of titles for the plots depending on categories
+    #TODO create nice titles
+    titles={logParser.NAME:"name",
+            logParser.DATE:"date",
+            logParser.TIME:"time",
+            logParser.PROTOCOL:"protocol",
+            logParser.FILE:"file",
+            logParser.RECTYPE:"rectype",
+            logParser.STATUS:"status",
+            logParser.SIZE:"size",
+            logParser.REF:"ref",
+            logParser.PROGRAM:"program",
+            logParser.OS:"os",
+            logParser.LANG:"lang",
+            logParser.TLD:"tld"}
+
+    #how many wedges/bars should be created depending on category
+    #(None for as much as in data)
+    top={logParser.NAME:None, logParser.DATE:5, logParser.TIME:None,
+         logParser.PROTOCOL:None, logParser.FILE:None, logParser.RECTYPE:None,
+         logParser.STATUS:None, logParser.SIZE:None, logParser.REF:None,
+         logParser.PROGRAM:None, logParser.OS:None, logParser.LANG:None,
+         logParser.TLD:None}
+
+    #creation of the svgs (key: title - value: svg)
+    dic={}
+    for item in dataToPlot.items():
+        dic[titles[item[0]]]=chart[item[0]](item[1],top[item[0]])
+    return dic
+
 #============================================================================
 # MAIN
 #============================================================================
@@ -113,52 +168,7 @@ def giveArgumentsToParser(params):
 #parse arguments
 parsingRes=giveArgumentsToParser(cgi.FieldStorage()).parse()
 
-res={logParser.PROTOCOL:{"banane":3,"gurke":2,"hasen":5,"moehre":2},
-     logParser.PROGRAM:{"kaesekuchen":25,"schokokuchen":15}}
+parsingRes={logParser.DATE:{"banane":3,"gurke":2,"hasen":5,"moehre":2}}#,logParser.PROGRAM:{"kaesekuchen":999,"schokokuchen":15}}
 
-chart={logParser.NAME:svgCreator.createPieChart,
-       logParser.PROTOCOL:svgCreator.createPieChart,
-       logParser.FILE:svgCreator.createPieChart,
-       logParser.RECTYPE:svgCreator.createPieChart,
-       logParser.STATUS:svgCreator.createPieChart,
-       logParser.REF:svgCreator.createPieChart,
-       logParser.PROGRAM:svgCreator.createPieChart,
-       logParser.OS:svgCreator.createPieChart,
-       logParser.LANG:svgCreator.createPieChart,
-       logParser.TLD:svgCreator.createPieChart,
-       logParser.DATE:svgCreator.createBarChart,
-       logParser.TIME:svgCreator.createBarChart,
-       logParser.SIZE:svgCreator.createBarChart}
-
-#TODO hier vernünftige Überschriften hinschreiben
-mapping={logParser.NAME:"name",
-         logParser.DATE:"date",
-         logParser.TIME:"time",
-         logParser.PROTOCOL:"protocol",
-         logParser.FILE:"file",
-         logParser.RECTYPE:"rectype",
-         logParser.STATUS:"status",
-         logParser.SIZE:"size",
-         logParser.REF:"ref",
-         logParser.PROGRAM:"program",
-         logParser.OS:"os",
-         logParser.LANG:"lang",
-         logParser.TLD:"tld"}
-
-top={logParser.NAME:None,
-     logParser.DATE:None,
-     logParser.TIME:None,
-     logParser.PROTOCOL:2,
-     logParser.FILE:None,
-     logParser.RECTYPE:None,
-     logParser.STATUS:None,
-     logParser.SIZE:None,
-     logParser.REF:None,
-     logParser.PROGRAM:None,
-     logParser.OS:None,
-     logParser.LANG:None,
-     logParser.TLD:None}
-
-dic={}
-for item in res.items():
-    dic[mapping[item[0]]]=chart[item[0]](item[1],top[item[0]])
+#build svgs prom the parsed data
+res=makeSVGs(parsingRes)
