@@ -10,9 +10,11 @@ TODO finish doc when script grows!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 @author: adreyer
 """
-#Needed to show plain text on website. Maybe has to be deleted when html is
-#built.
-print "Content-Type: text/plain\n"
+#Needed to interpret the printed output as html (following blanc line is)
+print "Content-Type: text/html"
+print
+print "<TITLE>Log Analyser - Result</TITLE>"
+print "<H1>Your results:</H1>"
 
 import cgi,cgitb
 import time
@@ -52,15 +54,15 @@ def giveArgumentsToParser(params):
             date1=time.strptime(params["cdate1"].value.lstrip().rstrip(),
                           "%d/%b/%Y")
         except ValueError:
-            print "First date does not have the right format. Will not " + \
-                "use a filter here."
+            print "NOTE: First date does not have the valid format. " + \
+                "Will not use a filter here.<br>"
     if "cdate2" in params:
         try:
             date2=time.strptime(params["cdate2"].value.lstrip().rstrip(),
                           "%d/%b/%Y")
         except ValueError:
-            print "Second date does not have the right format. Will not " + \
-                "use a filter here."
+            print "NOTE: Second date does not have the valid format. " + \
+                "Will not use a filter here.<br>"
     if date1 or date2:
         filters.append((logParser.DATE,date1,date2))
 
@@ -148,7 +150,7 @@ def makeSVGs(dataToPlot):
 
     #how many wedges/bars should be created depending on category
     #(None for as much as in data)
-    top={logParser.NAME:None, logParser.DATE:5, logParser.TIME:None,
+    top={logParser.NAME:None, logParser.DATE:None, logParser.TIME:None,
          logParser.PROTOCOL:None, logParser.FILE:None, logParser.RECTYPE:None,
          logParser.STATUS:None, logParser.SIZE:None, logParser.REF:None,
          logParser.PROGRAM:None, logParser.OS:None, logParser.LANG:None,
@@ -164,11 +166,12 @@ def makeSVGs(dataToPlot):
 # MAIN
 #============================================================================
 #enables nice debugging information in browser when something goes wrong
-#cgitb.enable()
+cgitb.enable()
 #parse arguments
 parsingRes=giveArgumentsToParser(cgi.FieldStorage()).parse()
 
-parsingRes={logParser.DATE:{"banane":3,"gurke":2,"hasen":5,"moehre":2}}#,logParser.PROGRAM:{"kaesekuchen":999,"schokokuchen":15}}
+parsingRes={logParser.LANG:{"banane":3,"gurke":2,"hasen":5,"moehre":2}}#,logParser.PROGRAM:{"kaesekuchen":999,"schokokuchen":15}}
 
 #build svgs prom the parsed data
 res=makeSVGs(parsingRes)
+print res.values()[0].getvalue()

@@ -6,7 +6,8 @@ Tools for creating svgs from data in dictionaries.
 
 @author: adreyer
 """
-
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plot
 import operator
 import StringIO
