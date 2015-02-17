@@ -6,26 +6,29 @@ Module containing the parser object handling the parsing of the logfiles.
 @author: jpoeppel
 """
 
+import time
+import re
+
 NAME = 0
-DATE = 1
-TIME = 2
-PROTOCOL = 3
-FILE = 4
+DATE = 3
+TIME = 4
+PROTOCOL = 7
+FILE = 6
 RECTYPE = 5
-STATUS = 6
-SIZE = 7
-REF =  8
-PROGRAM = 9
-OS = 10
-LANG = 11
-TLD = 12
+STATUS = 8
+SIZE = 9
+REF =  10
+PROGRAM = 11
+OS = 12
+LANG = 13
+TLD = 1
 
 ALLOWEDFILTERTYPES = [NAME, DATE, PROTOCOL, REF, TLD]
 ALLOWEDCATEGORYTYPES = [NAME, DATE, TIME, PROTOCOL, FILE, RECTYPE, STATUS, SIZE, REF, PROGRAM, OS, LANG, TLD]
 
 class LogParser(object):
     
-    def __init__(self, f = None, filters = []):
+    def __init__(self, fileName = None, filters = []):
         """
         Constructor for the LogParser.
         
@@ -41,17 +44,15 @@ class LogParser(object):
         
         Raises
         ------
-        IOError
-            If the given file cannot be opened.
-            This is passed through from setFile
         TypeError
             If at least one of the given filters uses an invalid type. 
             This is passed through from addFilters.
+            Is also thrown if fileName is not a string.
         """
         self.filters = []
         self.categories = []
         self.addFilters(filters)
-        self.setFile(f)
+        self.setFile(fileName)
     
     def addFilter(self, fil):
         """
@@ -147,16 +148,14 @@ class LogParser(object):
             
         Raises
         ------
-        IOError
-            If the file with the specified name cannot be opened.
+        TypeError
+            If the filename is not a string.
         """
         
-        if fileName != None and fileName != '':
-            try:
-                self.file = file(fileName, 'r')
-            except IOError:
-                raise IOError("File {} was not found.".format(fileName))
-        
+        if fileName != None and not isinstance(fileName, str):
+            raise TypeError("Filename must be a string.")
+        else:
+            self.fileName = fileName
     
     def parse(self):
         """
@@ -164,8 +163,75 @@ class LogParser(object):
         
         Returns
         -------
-        list of dicts
+        dic of dicts
             A dictionary for each category where the keys correspond to the found category bins and the values
-            contain the number of occurence. The dictionary furthmore contain pair ("__TITLE__", categoryName).
+            contain the number of occurence. Each dictionary is stored with the corresponding categoryType
+            as key in the outer dictionary.
+            
+        Raises
+        ------
+        IOError
+            If no filename was specified but categories were specified. Or the file could not be opened.
         """
-        pass
+        if len(self.categories) == 0:
+            return {}
+        if self.fileName == None:
+            raise IOError("No file was specified.")
+            
+        res = {{} for cat in self.categories}
+
+        
+        with open(self.fileName) as parsedFile:
+            for line in parsedFile:
+                lineValid = True
+                lineAr = line.split(' ')
+                for f in self.filters:
+                    if f[0] == DATE:
+                        #Date needs to check for potentially 2 conditions
+                        dString = lineAr[DATE][1:11]
+                        dTime = time.strptime(dString, "%d/%b/%Y")
+                        if (f[1] != None and dTime < f[1]) or (f[2] != None and dTime > f[2]):
+                            lineValid = False
+                            break
+                    elif f[0] == TLD:
+                        #TLDs are part of the name
+                        if lineAr[NAME][lineAr[NAME].rfind('.')+1:] != f[1]:
+                            lineValid = False
+                            break
+                    else:
+                        # Name, Protocol and Ref just search for their arguments in the respective fields.
+                        if lineAr[f[0]].find(f[1]) < 0:
+                            lineValid = False
+                            break
+                if lineValid:
+                    for cat in self.categories:
+                        if cat in [NAME, PROTOCOL, RECTYPE, PROGRAM]:
+                            if res[cat].has_key(lineAr[cat]):
+                                res[cat][lineAr[cat]] += 1
+                            else:
+                                res[cat][lineAr[cat]] = 1
+                        elif cat == DATE:
+                            dString = lineAr[DATE][:10]
+                            if res[cat].has_key(dString):
+                                res[cat][dString] += 1
+                            else:
+                                res[cat][dString] = 1
+                        elif cat == TIME:
+                            hString = lineAr[DATE][12:14]
+                            if res[cat].has_key(hString):
+                                res[cat][hString] += 1
+                            else:
+                                res[cat][hString] = 1
+                        elif cat == FILE:
+                            regex = re.compile(r"/*.[a-z,A-Z]+$")
+                            files = regex.search(lineAr[FILE])
+                            
+                        pass
+                                            
+                        
+                
+            
+        return res
+
+                
+        
