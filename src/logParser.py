@@ -46,8 +46,11 @@ class LogParser(object):
         self.filters = []
         self.addFilters(filters)
         if f != None:
-            self.file = file()
-        pass
+            try:
+                self.file = file(f, 'r')
+            except IOError:
+                raise IOError("File {} was not found.".format(f))
+        
     
     def addFilter(self, fil):
         pass
