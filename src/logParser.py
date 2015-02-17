@@ -8,16 +8,17 @@ Module containing the parser object handling the parsing of the logfiles.
 
 NAME = 0
 DATE = 1
-PROTOCOL = 2
-FILE = 3
-RECTYPE = 4
-STATUS = 5
-SIZE = 6
-REF =  7
-PROGRAM = 8
-OS = 9
-LANG = 10
-TLD = 11
+TIME = 2
+PROTOCOL = 3
+FILE = 4
+RECTYPE = 5
+STATUS = 6
+SIZE = 7
+REF =  8
+PROGRAM = 9
+OS = 10
+LANG = 11
+TLD = 12
 
 class LogParser(object):
     
@@ -67,6 +68,6 @@ class LogParser(object):
         -------
         list of dicts
             A dictionary for each category where the keys correspond to the found category bins and the values
-            contain the number of occurence.
+            contain the number of occurence. The dictionary furthmore contain pair ("__TITLE__", categoryName).
         """
         pass
