@@ -31,7 +31,8 @@ class LogParser(object):
             Path to the file that is to be parsed (Default None)
         filters : list of tuple(TYPE, Arg1 [, Arg2])
             List of filters that should be applied. A filter is always a tuple consisting of the type
-            which can be any of (NAME, DATE, PROTOCOL, REF, TLD)
+            which can be any of (logParser.NAME, logParser.DATE, logParser.PROTOCOL, logParser.REF, 
+            logParser.TLD)
             
         
         Raises
@@ -59,4 +60,13 @@ class LogParser(object):
         pass
     
     def parse():
+        """
+        Function to parse the specified text for the specified categories with the specified filters.
+        
+        Returns
+        -------
+        list of dicts
+            A dictionary for each category where the keys correspond to the found category bins and the values
+            contain the number of occurence.
+        """
         pass
