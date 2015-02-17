@@ -29,7 +29,11 @@ class TestParserObject(unittest.TestCase):
         
         parser = logParser.LogParser(f = self.fileName)
         self.assertIsNotNone(parser)
-        self.assertEqual()
+        self.assertIsNotNone(parser.file)
+        
+    def test_createParserWithIncorrectFile(self):
+        with self.assertRaises(IOError):
+            parser = logParser.LogParser(f = "blub")
         
     def test_createParserWithInvalidFilterType(self):
         filters = [(logParser.FILE, "123.123.123.2"), (logParser.TIME, time.time)]
@@ -70,11 +74,14 @@ class TestParserObject(unittest.TestCase):
             parser.addCategory("hans")
         
     def test_setFile(self):
-        pass
+        parser = logParser.LogParser()
+        parser.setFile(self.fileName)
+        self.assertIsNotNone(parser.file)
     
     def test_parse(self):
-        parser = logParser.LogParser()
+        parser = logParser.LogParser(f = self.fileName)
         parser.addCategory(logParser.PROTOCOL)
+        
     
     
 if __name__ == '__main__':

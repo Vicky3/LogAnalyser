@@ -22,6 +22,25 @@ TLD = 11
 class LogParser(object):
     
     def __init__(self, f = None, filters = []):
+        """
+        Constructor for the LogParser.
+        
+        Parameters
+        ----------
+        f : String, optional
+            Path to the file that is to be parsed (Default None)
+        filters : list of tuple(TYPE, Arg1 [, Arg2])
+            List of filters that should be applied. A filter is always a tuple consisting of the type
+            which can be any of (NAME, DATE, PROTOCOL, REF, TLD)
+            
+        
+        Raises
+        ------
+        IOError
+            If the given file cannot be opened.
+        TypeError
+            If at least one of the given filters uses an invalid type.
+        """
         pass
     
     def addFilter(fil):
