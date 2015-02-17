@@ -60,7 +60,7 @@ class TestParserObject(unittest.TestCase):
         parser = logParser.LogParser()
         parser.addCategory(logParser.NAME)
         self.assertTrue(len(parser.categories), 1)
-        self.assertTrue(parser.categories[0], logParser.Name)
+        self.assertEqual(parser.categories[0], logParser.NAME)
     
     def test_addCategories(self):
         parser = logParser.LogParser()
