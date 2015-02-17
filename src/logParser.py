@@ -178,7 +178,7 @@ class LogParser(object):
         if self.fileName == None:
             raise IOError("No file was specified.")
             
-        res = {{} for cat in self.categories}
+        res = {cat: {} for cat in self.categories}
 
         
         with open(self.fileName) as parsedFile:
