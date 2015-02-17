@@ -43,24 +43,28 @@ class LogParser(object):
         TypeError
             If at least one of the given filters uses an invalid type.
         """
+        self.filters = []
+        self.addFilters(filters)
+        if f != None:
+            self.file = file()
         pass
     
-    def addFilter(fil):
+    def addFilter(self, fil):
         pass
     
-    def addFilters(filterList):
+    def addFilters(self, filterList):
         pass
     
-    def addCategory(cat):
+    def addCategory(self, cat):
         pass
     
-    def addCategories(catList):
+    def addCategories(self, catList):
         pass
     
-    def setFile(fileName):
+    def setFile(self, fileName):
         pass
     
-    def parse():
+    def parse(self):
         """
         Function to parse the specified text for the specified categories with the specified filters.
         
