@@ -114,6 +114,7 @@ class TestHtmlBuilder(unittest.TestCase):
 
     def test_buildHtmlBasic(self):
         title="A Title"
+        notification="A failure occured. Please check input!"
         headline="A nice headline"
         content="Very important stuff"
         content2="Even more important stuff"
@@ -121,6 +122,7 @@ class TestHtmlBuilder(unittest.TestCase):
         content3="Some more stuff (not really important)"
         builder=htmlBuilder.HtmlBuilder()
         builder.setTitle(title)
+        builder.addNotification(notification)
         builder.addHeadline(headline)
         builder.addContent(content)
         builder.addContent(content2)
