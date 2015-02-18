@@ -4,7 +4,8 @@
 Created on Mon Feb 16 14:37:52 2015
 
 Main script started by the website.
-Will give arguments to parser and start parsing.
+Will give arguments to parser and start parsing. The results are given to the
+svgCreator to create pie/bar charts.
 
 TODO finish doc when script grows!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -170,8 +171,10 @@ cgitb.enable()
 #parse arguments
 parsingRes=giveArgumentsToParser(cgi.FieldStorage()).parse()
 
-parsingRes={logParser.LANG:{"banane":3,"gurke":2,"hasen":5,"moehre":2}}#,logParser.PROGRAM:{"kaesekuchen":999,"schokokuchen":15}}
+parsingRes={logParser.LANG:{"banane":3,"gurke":2,"hasen":5,"moehre":2},
+            logParser.DATE:{"kaesekuchen":999,"schokokuchen":15}}
 
 #build svgs prom the parsed data
 res=makeSVGs(parsingRes)
-print res.values()[0].getvalue()
+#print res.values()[0].getvalue()
+
