@@ -19,10 +19,10 @@ def createBarChart(data,top=None):
     Parameters
     ----------
     data : dict
-           keys are names of bars, values are heights of bars
+        keys are names of bars, values are heights of bars
     top : int, optional
-          a maximum number of bars, if less than in data the smallest bars
-          are melted together
+        a maximum number of bars, if less than in data the smallest bars are
+        melted together
 
     Returns
     -------
@@ -70,10 +70,10 @@ def createPieChart(data,top=None):
     Parameters
     ----------
     data : dict
-           keys are names of wedges, values are size of bars
+        keys are names of wedges, values are size of bars
     top : int, optional
-          a maximum number of wedges, if less than in data the smallest
-          wedges are melted together
+        a maximum number of wedges, if less than in data the smallest wedges
+        are melted together
 
     Returns
     -------

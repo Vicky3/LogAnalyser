@@ -33,7 +33,7 @@ def giveArgumentsToParser(params):
     Parameters
     ----------
     params : FieldStorage
-             the arguments given by the website
+        the arguments given by the website
 
     Returns
     -------
@@ -110,7 +110,7 @@ def makeSVGs(dataToPlot):
     Parameters
     ----------
     dataToPlot : dict of dicts
-                 the parsing results
+        the parsing results
 
     Returns
     -------
