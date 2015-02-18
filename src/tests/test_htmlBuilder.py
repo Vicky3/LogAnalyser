@@ -13,9 +13,6 @@ import StringIO
 
 class TestHtmlBuilder(unittest.TestCase):
 
-    def setUp(self):
-        pass
-
     def test_createHtmlBuilder(self):
         builder=htmlBuilder.HtmlBuilder()
         self.assertIsNotNone(builder)
@@ -33,20 +30,10 @@ class TestHtmlBuilder(unittest.TestCase):
         self.assertEqual(builder._title,title)
 
     def test_setInvalidTitle(self):
-        title={"title":"testtitle"}
+        title=123
         builder=htmlBuilder.HtmlBuilder()
         with self.assertRaises(TypeError):
             builder.setTitle(title)
-
-    def test_isString(self):
-        s="TestString"
-        builder=htmlBuilder.HtmlBuilder()
-        self.assertTrue(builder._isString(s))
-
-    def test_isStringFalse(self):
-        s={"string":"testString"}
-        builder=htmlBuilder.HtmlBuilder()
-        self.assertFalse(builder._isString(s))
 
     def test_addNotification(self):
         notification="A failure occured. Please check input!"
@@ -59,6 +46,12 @@ class TestHtmlBuilder(unittest.TestCase):
         self.assertEqual(len(builder._notifications),2)
         self.assertEqual(builder._notifications[1],notification2)
 
+    def test_addInvalidNotification(self):
+        notification={"notification":"A failure occured. Please check input!"}
+        builder=htmlBuilder.HtmlBuilder()
+        with self.assertRaises(TypeError):
+            builder.addNotification(notification)
+
     def test_addHeadline(self):
         headline="A nice headline"
         builder=htmlBuilder.HtmlBuilder()
@@ -70,16 +63,22 @@ class TestHtmlBuilder(unittest.TestCase):
         self.assertEqual(len(builder._content),2)
         self.assertEqual(builder._content[1][0],headline2)
 
+    def test_addInvalidHeadline(self):
+        headline=12345
+        builder=htmlBuilder.HtmlBuilder()
+        with self.assertRaises(TypeError):
+            builder.addHeadline(headline)
+
     def test_addContentText(self):
         content="Very important stuff"
         builder=htmlBuilder.HtmlBuilder()
         builder.addHeadline("Topic 1")
         builder.addContent(content)
-        self.assertEqual(len(builder._content),1)
+        self.assertEqual(len(builder._content[0][1]),1)
         self.assertEqual(builder._content[0][1][0],content)
         content2="Even more important stuff"
         builder.addContent(content2)
-        self.assertEqual(len(builder._content),2)
+        self.assertEqual(len(builder._content[0][1]),2)
         self.assertEqual(builder._content[0][1][1],content2)
 
     def test_addContentSVG(self):
@@ -93,6 +92,12 @@ class TestHtmlBuilder(unittest.TestCase):
         self.assertEqual(len(builder._content),1)
         self.assertEqual(builder._content[0][1][0],s)
 
+    def test_addInvalidContent(self):
+        content=42
+        builder=htmlBuilder.HtmlBuilder()
+        with self.assertRaises(TypeError):
+            builder.addHeadline(content)
+
     def test_addContentWithNoHeadline(self):
         content="Very important stuff"
         builder=htmlBuilder.HtmlBuilder()
@@ -103,7 +108,7 @@ class TestHtmlBuilder(unittest.TestCase):
         builder.addHeadline(headline)
         content2="Even more important stuff"
         builder.addContent(content2)
-        self.assertEqual(len(builder._content),1)
+        self.assertEqual(len(builder._content),2)
         self.assertEqual(builder._content[1][0],headline)
         self.assertEqual(builder._content[1][1][0],content2)
 
