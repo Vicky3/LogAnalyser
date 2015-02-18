@@ -88,7 +88,7 @@ class TestParserObject(unittest.TestCase):
         parser.addCategory(logParser.PROTOCOL)
         res = parser.parse()
         self.assertTrue(len(res)>0)
-        self.assertEqual(res[logParser.PROTOCOL]["HTTP/1.1"], 18)
+        self.assertEqual(res[logParser.PROTOCOL]["HTTP/1.1"], 13)
         
     def test_parseDate(self):
         parser = logParser.LogParser(fileName = self.fileName)
@@ -116,7 +116,7 @@ class TestParserObject(unittest.TestCase):
         parser.addCategory(logParser.FILE)
         res = parser.parse()
         self.assertTrue(len(res)>0)
-        self.assertEqual(res[logParser.FILE]["jpg"], 3)
+        self.assertEqual(res[logParser.FILE][".jpg"], 3)
         
     def test_parseRecType(self):
         parser = logParser.LogParser(fileName = self.fileName)
@@ -165,7 +165,7 @@ class TestParserObject(unittest.TestCase):
         parser.addCategory(logParser.LANG)
         res = parser.parse()
         self.assertTrue(len(res)>0)
-        self.assertEqual(res[logParser.LANG]["None"], 18)
+        self.assertEqual(res[logParser.LANG]["Unknown"], 17)
         
     def test_parseTLD(self):
         parser = logParser.LogParser(fileName = self.fileName)

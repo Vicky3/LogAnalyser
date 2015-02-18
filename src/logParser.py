@@ -19,9 +19,17 @@ STATUS = 8
 SIZE = 9
 REF =  10
 PROGRAM = 11
-OS = 12
-LANG = 13
+OS = 13
+LANG = 12
 TLD = 1
+
+
+binSize = 100
+fileRegex = re.compile(r"/*\.[a-z,A-Z]+$")
+refRegex = re.compile(r"([a-z,A-Z]+://[^/]+/[^/]+/)")
+tldRegex = re.compile(r"\.([a-z,A-Z]+)$")
+osRegex = re.compile(r"\(.*(Macintosh|Win[^;\)]+|Sun[^;\)]+|IO[^;\)]+)[;\s\)]")
+
 
 ALLOWEDFILTERTYPES = [NAME, DATE, PROTOCOL, REF, TLD]
 ALLOWEDCATEGORYTYPES = [NAME, DATE, TIME, PROTOCOL, FILE, RECTYPE, STATUS, SIZE, REF, PROGRAM, OS, LANG, TLD]
@@ -184,7 +192,8 @@ class LogParser(object):
         with open(self.fileName) as parsedFile:
             for line in parsedFile:
                 lineValid = True
-                lineAr = line.split(' ')
+                lineAr = line.replace('"','').split(' ')
+#                print lineAr
                 for f in self.filters:
                     if f[0] == DATE:
                         #Date needs to check for potentially 2 conditions
@@ -211,22 +220,101 @@ class LogParser(object):
                             else:
                                 res[cat][lineAr[cat]] = 1
                         elif cat == DATE:
-                            dString = lineAr[DATE][:10]
+                            dString = lineAr[DATE][1:12]
                             if res[cat].has_key(dString):
                                 res[cat][dString] += 1
                             else:
                                 res[cat][dString] = 1
                         elif cat == TIME:
-                            hString = lineAr[DATE][12:14]
+                            hString = lineAr[DATE][13:15]
                             if res[cat].has_key(hString):
                                 res[cat][hString] += 1
                             else:
                                 res[cat][hString] = 1
                         elif cat == FILE:
-                            regex = re.compile(r"/*.[a-z,A-Z]+$")
-                            files = regex.search(lineAr[FILE])
+                            files = fileRegex.search(lineAr[FILE])
+                            if files == None:
+                                if res[cat].has_key("-"):
+                                    res[cat]["-"] += 1
+                                else:
+                                    res[cat]["-"] = 1
+                            else:
+                                if res[cat].has_key(files.group()):
+                                    res[cat][files.group()] += 1
+                                else:
+                                    res[cat][files.group()] = 1
+                        elif cat == STATUS:
+                            if res[cat].has_key(lineAr[STATUS][0]):
+                                res[cat][lineAr[STATUS][0]] += 1
+                            else:
+                                res[cat][lineAr[STATUS][0]] = 1
+                        elif cat == SIZE:
+                            sString = lineAr[SIZE]
+                            if sString == '-':
+                                if res[cat].has_key(sString):
+                                    res[cat][sString] += 1
+                                else:
+                                    res[cat][sString] = 1
+                            else:
+                                #Slow way
+                                size = int(sString)
+                                binNr = size/binSize
+                                binString = str(binNr*binSize+1) +'-' +str((binNr+1)*binSize) 
+                                if res[cat].has_key(binString):
+                                    res[cat][binString] += 1
+                                else:
+                                    res[cat][binString] = 1
+                        elif cat == REF:
                             
-                        pass
+                            refRes = refRegex.search(lineAr[REF])
+                            if refRes == None:
+                                if res[cat].has_key("-"):
+                                    res[cat]["-"] += 1
+                                else:
+                                    res[cat]["-"] = 1
+                            else:
+                                if res[cat].has_key(refRes.group()):
+                                    res[cat][refRes.group()] += 1
+                                else:
+                                    res[cat][refRes.group()] = 1
+                        elif cat == OS:
+                            isRes= osRegex.search(line)
+                            if isRes == None:
+                                if res[cat].has_key("Unknown"):
+                                    res[cat]["Unknown"] += 1
+                                else:
+                                    res[cat]["Unknown"] = 1
+                            else:
+                                if res[cat].has_key(isRes.groups()[0]):
+                                    res[cat][isRes.groups()[0]] += 1
+                                else:
+                                    res[cat][isRes.groups()[0]] = 1
+                        elif cat == LANG:
+                            lString = lineAr[LANG]
+                            if lString[0] == '[':
+                                if res[cat].has_key(lString[1:3]):
+                                    res[cat][lString[1:3]] += 1
+                                else:
+                                    res[cat][lString[1:3]] = 1
+                            else:
+                                if res[cat].has_key("Unknown"):
+                                    res[cat]["Unknown"] += 1
+                                else:
+                                    res[cat]["Unknown"] = 1
+                        elif cat == TLD:
+                            tlds = tldRegex.search(lineAr[NAME])
+                            if tlds == None:
+                                if res[cat].has_key("Unknown"):
+                                    res[cat]["Unknown"] += 1
+                                else:
+                                    res[cat]["Unknown"] = 1
+                            else:
+                                if res[cat].has_key(tlds.groups()[0]):
+                                    res[cat][tlds.groups()[0]] += 1
+                                else:
+                                    res[cat][tlds.groups()[0]] = 1
+                        else:
+                            raise TypeError("Invalid category", cat)
                                             
                         
                 
