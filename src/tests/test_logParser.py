@@ -88,7 +88,7 @@ class TestParserObject(unittest.TestCase):
         parser.addCategory(logParser.PROTOCOL)
         res = parser.parse()
         self.assertTrue(len(res)>0)
-        self.assertEqual(res[logParser.PROTOCOL]["HTTP/1.1"], 13)
+        self.assertEqual(res[logParser.PROTOCOL]["HTTP/1.1"], 14)
         
     def test_parseDate(self):
         parser = logParser.LogParser(fileName = self.fileName)
@@ -109,7 +109,7 @@ class TestParserObject(unittest.TestCase):
         parser.addCategory(logParser.TIME)
         res = parser.parse()
         self.assertTrue(len(res)>0)
-        self.assertEqual(res[logParser.TIME]["00"], 16)
+        self.assertEqual(res[logParser.TIME]["00"], 15)
         
     def test_parseFile(self):
         parser = logParser.LogParser(fileName = self.fileName)
@@ -123,7 +123,7 @@ class TestParserObject(unittest.TestCase):
         parser.addCategory(logParser.RECTYPE)
         res = parser.parse()
         self.assertTrue(len(res)>0)
-        self.assertEqual(res[logParser.RECTYPE]["POST"], 3)
+        self.assertEqual(res[logParser.RECTYPE]["POST"], 2)
         
     def test_parseStatus(self):
         parser = logParser.LogParser(fileName = self.fileName)
@@ -151,14 +151,14 @@ class TestParserObject(unittest.TestCase):
         parser.addCategory(logParser.PROGRAM)
         res = parser.parse()
         self.assertTrue(len(res)>0)
-        self.assertEqual(res[logParser.PROGRAM]["Mozilla/4.51"], 4)
+        self.assertEqual(res[logParser.PROGRAM]["Mozilla/4.51"], 3)
         
     def test_parseOs(self):
         parser = logParser.LogParser(fileName = self.fileName)
         parser.addCategory(logParser.OS)
         res = parser.parse()
         self.assertTrue(len(res)>0)
-        self.assertEqual(res[logParser.OS]["Macintosh"], 4)
+        self.assertEqual(res[logParser.OS]["Macintosh"], 3)
             
     def test_parseLang(self):
         parser = logParser.LogParser(fileName = self.fileName)
@@ -172,7 +172,7 @@ class TestParserObject(unittest.TestCase):
         parser.addCategory(logParser.TLD)
         res = parser.parse()
         self.assertTrue(len(res)>0)
-        self.assertEqual(res[logParser.TLD]["edu"], 11)
+        self.assertEqual(res[logParser.TLD]["edu"], 10)
         
     def test_parseMultiple(self):
         parser = logParser.LogParser(fileName = self.fileName)
@@ -181,7 +181,7 @@ class TestParserObject(unittest.TestCase):
         res = parser.parse()
         self.assertEqual(len(res),2)
         self.assertEqual(res[logParser.REF]["http://bibiserv.techfak.uni-bielefeld.de/genefisher/"], 4)
-        self.assertEqual(res[logParser.PROGRAM]["Mozilla/4.51"], 4)
+        self.assertEqual(res[logParser.PROGRAM]["Mozilla/4.51"], 3)
         
     def test_parseWithoutFile(self):
         parser = logParser.LogParser()
