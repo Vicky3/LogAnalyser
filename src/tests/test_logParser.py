@@ -130,7 +130,7 @@ class TestParserObject(unittest.TestCase):
         parser.addCategory(logParser.STATUS)
         res = parser.parse()
         self.assertTrue(len(res)>0)
-        self.assertEqual(res[logParser.STATUS]["3"], 5)
+        self.assertEqual(res[logParser.STATUS]["300"], 5)
         
     def test_parseSize(self):
         parser = logParser.LogParser(fileName = self.fileName)
