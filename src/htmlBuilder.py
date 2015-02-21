@@ -9,6 +9,7 @@ A small class to build a basic HTML file.
 
 import StringIO
 import xml.dom.minidom as dom
+import xml.sax.saxutils
 
 class HtmlBuilder:
 
@@ -171,12 +172,15 @@ class HtmlBuilder:
                     content=doc.createTextNode(co)
                 else:
                     #...or a StringIO with an svg in it
-                    content=dom.parseString(co.getvalue().replace("\n","")).childNodes[0]
+                    #content=dom.parseString(co.getvalue().replace("\n","")).childNodes[0]
+                    content=doc.createTextNode(co.getvalue())
                 td.appendChild(content)
                 br=doc.createElement("br")
                 td.appendChild(br)
             tr.appendChild(td)
+        if not newline:
+            table.appendChild(tr)
         body.appendChild(table)
         site.appendChild(body)
 
-        return site.toprettyxml(encoding="utf-8")
+        return xml.sax.saxutils.unescape(site.toprettyxml(encoding="utf-8"),{"&quot;":'"'})
