@@ -7,20 +7,24 @@ Module containing the parser object handling the parsing of the logfiles.
 """
 
 import time
+import codecs
 import re
 
 NAME = 0
+USER = 2
 DATE = 3
 TIME = 4
-PROTOCOL = 7
-FILE = 6
-RECTYPE = 5
-STATUS = 8
-SIZE = 9
-REF =  10
-PROGRAM = 11
-OS = 13
-LANG = 12
+TIMEZONE = 5
+RECTYPE = 6
+FILE = 7
+PROTOCOL = 8
+
+STATUS = 9
+SIZE = 10
+REF =  11
+PROGRAM = 12
+OS = 14
+LANG = 13
 TLD = 1
 
 
@@ -29,8 +33,9 @@ fileRegex = re.compile(r"/*\.[a-z,A-Z]+$")
 refRegex = re.compile(r"([a-z,A-Z]+://[^/]+/[^/]+/)")
 tldRegex = re.compile(r"\.([a-z,A-Z]+)$")
 osRegex = re.compile(r"\(.*(Macintosh|Win[^;\)]+|Sun[^;\)]+|IO[^;\)]+)[;\s\)]")
+lanRegex = re.compile(r" \[([a-z,A-Z]{2})\] ")
 
-
+completeReg = re.compile(r"(\S+) (\S+) (\S+) \[([^:]+):(\d+:\d+:\d+) ([^\]]+)\] \"(?:(?:(\S+) (.*?)(?:(?: (\S+)\")|(?:\")))|(?:.\")) (\S+) (\S+) \"(.*)\" \"(.*)\"$")
 ALLOWEDFILTERTYPES = [NAME, DATE, PROTOCOL, REF, TLD]
 ALLOWEDCATEGORYTYPES = [NAME, DATE, TIME, PROTOCOL, FILE, RECTYPE, STATUS, SIZE, REF, PROGRAM, OS, LANG, TLD]
 
@@ -192,12 +197,15 @@ class LogParser(object):
         with open(self.fileName) as parsedFile:
             for line in parsedFile:
                 lineValid = True
-                lineAr = line.replace('"','').split(' ')
+#                    
+#                lineAr = line.replace('"','').split(' ')
+                lineRes = completeReg.search(line)
+                lineAr = lineRes.groups()
 #                print lineAr
                 for f in self.filters:
                     if f[0] == DATE:
                         #Date needs to check for potentially 2 conditions
-                        dString = lineAr[DATE][1:11]
+                        dString = lineAr[DATE]
                         dTime = time.strptime(dString, "%d/%b/%Y")
                         if (f[1] != None and dTime < f[1]) or (f[2] != None and dTime > f[2]):
                             lineValid = False
@@ -214,25 +222,34 @@ class LogParser(object):
                             break
                 if lineValid:
                     for cat in self.categories:
-                        if cat in [NAME, PROTOCOL, RECTYPE, PROGRAM]:
+                        if cat in [NAME, PROTOCOL, RECTYPE]:
                             if res[cat].has_key(lineAr[cat]):
                                 res[cat][lineAr[cat]] += 1
                             else:
                                 res[cat][lineAr[cat]] = 1
+                        elif cat == PROGRAM:
+                            pString = lineAr[cat].split(' ')[0]
+                            if res[cat].has_key(pString):
+                                res[cat][pString] += 1
+                            else:
+                                res[cat][pString] = 1
                         elif cat == DATE:
-                            dString = lineAr[DATE][1:12]
+                            dString = lineAr[DATE][0:11]
                             if res[cat].has_key(dString):
                                 res[cat][dString] += 1
                             else:
                                 res[cat][dString] = 1
                         elif cat == TIME:
-                            hString = lineAr[DATE][13:15]
+                            hString = lineAr[TIME][:2]
                             if res[cat].has_key(hString):
                                 res[cat][hString] += 1
                             else:
                                 res[cat][hString] = 1
                         elif cat == FILE:
-                            files = fileRegex.search(lineAr[FILE])
+                            if lineAr[FILE] != None:
+                                files = fileRegex.search(lineAr[FILE])
+                            else:
+                                files = None
                             if files == None:
                                 if res[cat].has_key("-"):
                                     res[cat]["-"] += 1
@@ -244,12 +261,13 @@ class LogParser(object):
                                 else:
                                     res[cat][files.group()] = 1
                         elif cat == STATUS:
-                            if res[cat].has_key(lineAr[STATUS][0]):
-                                res[cat][lineAr[STATUS][0]] += 1
+                            if res[cat].has_key(lineAr[STATUS][0]+'00'):
+                                res[cat][lineAr[STATUS][0]+'00'] += 1
                             else:
-                                res[cat][lineAr[STATUS][0]] = 1
+                                res[cat][lineAr[STATUS][0]+'00'] = 1
                         elif cat == SIZE:
                             sString = lineAr[SIZE]
+#                            print sString
                             if sString == '-':
                                 if res[cat].has_key(sString):
                                     res[cat][sString] += 1
@@ -278,7 +296,7 @@ class LogParser(object):
                                 else:
                                     res[cat][refRes.group()] = 1
                         elif cat == OS:
-                            isRes= osRegex.search(line)
+                            isRes= osRegex.search(lineAr[PROGRAM])
                             if isRes == None:
                                 if res[cat].has_key("Unknown"):
                                     res[cat]["Unknown"] += 1
@@ -290,17 +308,18 @@ class LogParser(object):
                                 else:
                                     res[cat][isRes.groups()[0]] = 1
                         elif cat == LANG:
-                            lString = lineAr[LANG]
-                            if lString[0] == '[':
-                                if res[cat].has_key(lString[1:3]):
-                                    res[cat][lString[1:3]] += 1
-                                else:
-                                    res[cat][lString[1:3]] = 1
-                            else:
+                            lanRes = lanRegex.search(lineAr[PROGRAM])
+                            if lanRes == None:
                                 if res[cat].has_key("Unknown"):
                                     res[cat]["Unknown"] += 1
                                 else:
                                     res[cat]["Unknown"] = 1
+                            else:
+                                if res[cat].has_key(lanRes.groups()[0]):
+                                    res[cat][lanRes.groups()[0]] += 1
+                                else:
+                                    res[cat][lanRes.groups()[0]] = 1
+                                
                         elif cat == TLD:
                             tlds = tldRegex.search(lineAr[NAME])
                             if tlds == None:

@@ -15,4 +15,4 @@ noname-11370.generic.asu.edu - - [12/Dec/2000:23:59:49 +0100] "GET /dialign/ HTT
 noname-11370.generic.asu.edu - - [12/Dec/2000:23:59:51 +0100] "GET /icon/background.jpg HTTP/1.0" 200 10919 "http://bibiserv.techfak.uni-bielefeld.de/dialign/" "Mozilla/4.51 (Macintosh; U; PPC)"
 noname-11370.generic.asu.edu - - [13/Dec/2000:00:00:03 +0100] "GET /cgi-bin/dialign_submit HTTP/1.0" 200 4599 "http://bibiserv.techfak.uni-bielefeld.de/dialign/" "Mozilla/4.51 (Macintosh; U; PPC)"
 132.248.142.163 - - [13/Dec/2000:00:02:35 +0100] "POST /cgi-bin/dialign_submit HTTP/1.1" 200 2089 "http://bibiserv.techfak.uni-bielefeld.de/cgi-bin/dialign_submit" "Mozilla/4.0 (compatible; MSIE 5.5; Windows 95)"
-noname-11370.generic.asu.edu - - [13/Dec/2000:00:03:41 +0100] "POST /cgi-bin/dialign_submit HTTP/1.0" 200 39442 "http://bibiserv.techfak.uni-bielefeld.de/cgi-bin/dialign_submit" "Mozilla/4.51 (Macintosh; U; PPC)"
+206.19.39.234 - - [06/Dec/2000:20:16:54 +0100] "GET / HTTP/1.1" 200 6876 "-" "URLStarter1.0"
