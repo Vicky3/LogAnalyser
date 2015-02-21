@@ -237,11 +237,18 @@ class LogParser(object):
                                 else:
                                     res[cat][lineAr[cat]] = 1
                         elif cat == PROGRAM:
-                            pString = lineAr[cat].split(' ')[0]
-                            if res[cat].has_key(pString):
-                                res[cat][pString] += 1
+                            if lineAr[cat] == None:                                    
+                                if res[cat].has_key("Unknown"):
+                                    res[cat]["Unknown"] += 1
+                                else:
+                                    res[cat]["Unknown"] = 1
                             else:
-                                res[cat][pString] = 1
+                                pString = lineAr[cat].split(' ')[0]
+                                if res[cat].has_key(pString):
+                                    res[cat][pString] += 1
+                                else:
+                                    res[cat][pString] = 1
+                            
                         elif cat == DATE:
                             dString = lineAr[DATE][0:11]
                             if res[cat].has_key(dString):
