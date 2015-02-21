@@ -10,6 +10,7 @@ Testcase for HtmlBuilder.
 import unittest
 import htmlBuilder
 import StringIO
+import xml.dom.minidom as dom
 
 class TestHtmlBuilder(unittest.TestCase):
 
@@ -137,7 +138,9 @@ class TestHtmlBuilder(unittest.TestCase):
         title="A Title"
         headline="A nice headline"
         with open('testData/smiley.svg', 'r') as f:
-            content = f.read()
+            tmp = f.read()
+        content=StringIO.StringIO()
+        content.write(tmp)
         content2="Even more important stuff"
         headline2="Another headline"
         content3="Some more stuff (not really important)"
@@ -148,9 +151,9 @@ class TestHtmlBuilder(unittest.TestCase):
         builder.addContent(content2)
         builder.addHeadline(headline2)
         builder.addContent(content3)
-        res=builder.buildHtml()
+        res=dom.parseString(builder.buildHtml()).toprettyxml(encoding="utf-8")
         with open('testData/site2.html', 'r') as f:
-            true = f.read()
+            true = dom.parseString(f.read()).toprettyxml(encoding="utf-8")
         self.assertEqual(res,true)
 
 if __name__ == '__main__':

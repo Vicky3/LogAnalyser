@@ -12,7 +12,8 @@ TODO finish doc when script grows!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 @author: adreyer
 """
 #Needed to interpret the printed output as html (following blanc line is)
-print "Content-Type: text/html"
+#print "Content-Type: text/html"
+print "Content_Type: text/plain"
 print
 print "<TITLE>Log Analyser - Result</TITLE>"
 print "<H1>Your results:</H1>"
@@ -56,14 +57,14 @@ def giveArgumentsToParser(params):
                           "%d/%b/%Y")
         except ValueError:
             print "NOTE: First date does not have the valid format. " + \
-                "Will not use a filter here.<br>"
+                "Will not use a filter here."
     if "cdate2" in params:
         try:
             date2=time.strptime(params["cdate2"].value.lstrip().rstrip(),
                           "%d/%b/%Y")
         except ValueError:
             print "NOTE: Second date does not have the valid format. " + \
-                "Will not use a filter here.<br>"
+                "Will not use a filter here."
     if date1 or date2:
         filters.append((logParser.DATE,date1,date2))
 
@@ -151,11 +152,11 @@ def makeSVGs(dataToPlot):
 
     #how many wedges/bars should be created depending on category
     #(None for as much as in data)
-    top={logParser.NAME:None, logParser.DATE:None, logParser.TIME:None,
-         logParser.PROTOCOL:None, logParser.FILE:None, logParser.RECTYPE:None,
-         logParser.STATUS:None, logParser.SIZE:None, logParser.REF:None,
-         logParser.PROGRAM:None, logParser.OS:None, logParser.LANG:None,
-         logParser.TLD:None}
+    top={logParser.NAME:14, logParser.DATE:None, logParser.TIME:None,
+         logParser.PROTOCOL:7, logParser.FILE:7, logParser.RECTYPE:7,
+         logParser.STATUS:7, logParser.SIZE:7, logParser.REF:7,
+         logParser.PROGRAM:7, logParser.OS:14, logParser.LANG:7,
+         logParser.TLD:14}
 
     #creation of the svgs (key: title - value: svg)
     dic={}
@@ -171,10 +172,16 @@ cgitb.enable()
 #parse arguments
 parsingRes=giveArgumentsToParser(cgi.FieldStorage()).parse()
 
-parsingRes={logParser.LANG:{"banane":3,"gurke":2,"hasen":5,"moehre":2},
-            logParser.DATE:{"kaesekuchen":999,"schokokuchen":15}}
+#print parsingRes
 
+#parsingRes={logParser.LANG:{"banane":3,"gurke":2,"hasen":5,"moehre":2},
+#            logParser.DATE:{"kaesekuchen":999,"schokokuchen":15}}
+#parsingRes={7: {'': 5, '200': 3, '301': 8, '-n': 3, '-': 21, 'target=_tools': 2, 'HTTP/1.0': 81244, 'HTTP/1.1': 55217}}
 #build svgs prom the parsed data
 res=makeSVGs(parsingRes)
-#print res.values()[0].getvalue()
 
+#print len(res)
+#print res.keys()
+#print "test",res['protocol']
+for a in res.keys():
+    print res[a].getvalue()
