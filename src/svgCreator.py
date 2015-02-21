@@ -101,8 +101,12 @@ def createPieChart(data,top=None):
         l=data.keys()
 
     #build svg
-    plot.pie(x, explode=None, labels=l, shadow=True,startangle=90,
+    plot.pie(x, explode=None, labels=l, colors=('b', 'g', 'r', 'c', 'm', 'y', 'w'), shadow=True,startangle=90,
              counterclock=False)
+
+    #TODO patterns = [ "/" , "\\" , "|" , "-" , "+" , "x", "o", "O", ".", "*" ]
+    #http://stackoverflow.com/questions/14279344/how-can-i-add-textures-to-my-bars-and-wedges
+
     plot.axis('equal')#make the pie round
     #write svg to StringIO
     f=StringIO.StringIO()
