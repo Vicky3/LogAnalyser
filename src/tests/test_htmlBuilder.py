@@ -151,9 +151,11 @@ class TestHtmlBuilder(unittest.TestCase):
         builder.addContent(content2)
         builder.addHeadline(headline2)
         builder.addContent(content3)
-        res=dom.parseString(builder.buildHtml()).toprettyxml(encoding="utf-8")
+        res=dom.parseString(builder.buildHtml().replace("\n","")\
+            .replace("\t","")).toprettyxml(encoding="utf-8")
         with open('testData/site2.html', 'r') as f:
-            true = dom.parseString(f.read()).toprettyxml(encoding="utf-8")
+            true = dom.parseString(f.read().replace("\n","")\
+                .replace("\t","")).toprettyxml(encoding="utf-8")
         self.assertEqual(res,true)
 
 if __name__ == '__main__':

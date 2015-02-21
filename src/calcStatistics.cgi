@@ -27,7 +27,7 @@ import svgCreator
 #Path where the log files are found.
 LOG_DIRECTORY="../logs/"
 
-def giveArgumentsToParser(params):
+def createParserWithArguments(params):
     """
     Reads in the arguments from the website. Checks if the dates have valid
     format. Builds a logParser that knows which arguments are given.
@@ -161,10 +161,8 @@ def makeSVGs(dataToPlot):
 
     #creation of the svgs (key: title - value: svg)
     dic={}
-    num=0
-    for item in dataToPlot.items():
-        dic[titles[item[0]]]=chart[item[0]](item[1],top[item[0]],num)
-        num+=1
+    for k,v in dataToPlot.items():
+        dic[titles[k]]=chart[k](v,top[k])
     return dic
 
 #============================================================================
@@ -174,23 +172,19 @@ def makeSVGs(dataToPlot):
 cgitb.enable()
 
 hBuilder=htmlBuilder.HtmlBuilder("Log Analyser - Result")
-#parse arguments
-parsingRes,notifications=giveArgumentsToParser(cgi.FieldStorage()).parse()
-#TODO nots: list of strings
 
-#parsingRes={logParser.LANG:{"banane":3,"gurke":2,"hasen":5,"moehre":2},
-#            logParser.DATE:{"kaesekuchen":999,"schokokuchen":15}}
-#parsingRes={7: {'': 5, '200': 3, '301': 8, '-n': 3, '-': 21, 'target=_tools': 2, 'HTTP/1.0': 81244, 'HTTP/1.1': 55217}}
-#build svgs prom the parsed data
+#parse arguments
+parsingRes,notifications=createParserWithArguments(cgi.FieldStorage()).parse()
+#notifications concerning invalid lines
 for note in notifications:
     hBuilder.addNotification(note)
+
+#build svgs from the parsed data
 res=makeSVGs(parsingRes)
 
-#print len(res)
-#print "test",res['protocol']
+#give results to htmlBuilder
 for k,v in res.items():
     hBuilder.addHeadline(k)
     hBuilder.addContent(v)
-    #print v.getvalue()
 
 print hBuilder.buildHtml()
