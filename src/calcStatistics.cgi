@@ -177,7 +177,7 @@ hBuilder=htmlBuilder.HtmlBuilder("Log Analyser - Result")
 parsingRes,notifications=createParserWithArguments(cgi.FieldStorage()).parse()
 #notifications concerning invalid lines
 for note in notifications:
-    hBuilder.addNotification(note)
+    hBuilder.addNotification("Invalid line: "+note)
 
 #build svgs from the parsed data
 res=makeSVGs(parsingRes)
