@@ -56,13 +56,12 @@ def createBarChart(data,top=None):
     xlpos=[n+0.4 for n in xpos]#pos of labels
     a=plt.subplot()
     a.bar(xpos, x)
-    a.set_xticks(xlpos)
-    a.set_xticklabels(l)
+    plt.xticks(xlpos,l,rotation=-90)
     a.set_ylabel("# of appearance")
 
     #write svg to StringIO
     f=StringIO.StringIO()
-    plt.savefig(f, format="svg")
+    plt.savefig(f, format="svg", bbox_inches='tight')
     plt.close()
     return f
 
