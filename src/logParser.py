@@ -192,14 +192,17 @@ class LogParser(object):
             raise IOError("No file was specified.")
             
         res = {cat: {} for cat in self.categories}
-
-        
+        invalidLines = []
+        start = time.time()
         with open(self.fileName) as parsedFile:
             for line in parsedFile:
                 lineValid = True
 #                    
 #                lineAr = line.replace('"','').split(' ')
                 lineRes = completeReg.search(line)
+                if lineRes == None:
+                    invalidLines.append(line)
+                    continue
                 lineAr = lineRes.groups()
 #                print lineAr
                 for f in self.filters:
@@ -335,10 +338,12 @@ class LogParser(object):
                         else:
                             raise TypeError("Invalid category", cat)
                                             
-                        
-                
-            
-        return res
+                    
+        print "Parsing took {} seconds <br>".format(time.time()-start)    
+        print "Number of invalid lines {} <br>".format(len(invalidLines))
+        for l in invalidLines:
+            print l + '<br>'            
+        return res, invalidLines
 
                 
         
