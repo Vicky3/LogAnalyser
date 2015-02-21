@@ -8,8 +8,6 @@ A small class to build a basic HTML file.
 """
 
 import StringIO
-#import xml.etree.cElementTree as ET
-#import lxml.html.builder as HB
 import xml.dom.minidom as dom
 
 class HtmlBuilder:
@@ -122,20 +120,9 @@ class HtmlBuilder:
         """
         Builds a html with the saved title, headlines and content.
         """
-#        site=ET.Element("html")
-#        head=ET.SubElement(site,"head")
-#        body=ET.SubElement(site,"body")
-#        if self._title:
-#            title=ET.SubElement(head,"title")
-#            title.text=self._title
-#            h1=ET.SubElement(body,"h1")
-#            h1.text=self._title
-#        body.text="test"
-#        table=ET.SubElement(body,"table",{"style":"width:100%"})
-#        newline=True
-
         doc=dom.Document()
         site=doc.createElement("html")
+        #when title set - make a head for the html document
         if self._title:
             head=doc.createElement("head")
             title=doc.createElement("title")
@@ -143,31 +130,53 @@ class HtmlBuilder:
             title.appendChild(ttext)
             head.appendChild(title)
             site.appendChild(head)
+        #====================================================================
         body=doc.createElement("body")
+        #if title - write it!
         if self._title:
             h1=doc.createElement("h1")
             th1=doc.createTextNode(self._title)
             h1.appendChild(th1)
             body.appendChild(h1)
+        #print notifications
         for n in self._notifications:
             n1=doc.createTextNode("NOTE: "+n)
             br=doc.createElement("br")
             body.appendChild(n1)
             body.appendChild(br)
+        #--------------------------------------------------------------------
+        #print content (in a table with two columns)
         newline=True
-        tr
+        table=doc.createElement("table")
+        table.setAttribute("style","width:100%")
         for c in self._content:
+            #two columns
             if newline:
                 tr=doc.createElement("tr")
+                newline=False
+            else:
+                table.appendChild(tr)
+                newline=True
             td=doc.createElement("td")
+            #if headline is set - write it
             if c[0]:
                 h2=doc.createElement("h2")
                 th2=doc.createTextNode(c[0])
                 h2.appendChild(th2)
-
-
+                td.appendChild(h2)
+            #content
+            for co in c[1]:
+                if isinstance(co, basestring):
+                    #can be a simple string...
+                    content=doc.createTextNode(co)
+                else:
+                    #...or a StringIO with an svg in it
+                    content=dom.parseString(co.getvalue().replace("\n","")).childNodes[0]
+                td.appendChild(content)
+                br=doc.createElement("br")
+                td.appendChild(br)
+            tr.appendChild(td)
+        body.appendChild(table)
         site.appendChild(body)
-        print site.toprettyxml()
 
-
-        return None
+        return site.toprettyxml(encoding="utf-8")
