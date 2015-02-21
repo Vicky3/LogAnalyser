@@ -32,23 +32,32 @@ def createBarChart(data,top=None):
     #top too big?
     if top>=len(data.values()):
         top=None
+    #sort dictionary in lists to melt the smallest wedges together
+#    sorted_x = sorted(data.items(), key=operator.itemgetter(0),
+#                      reverse=False)
+
     #top given
     if top:
         top-=1#number of bars from data
         #sort dictionary in lists to melt the smallest bars together
         sorted_x = sorted(data.items(), key=operator.itemgetter(1),
                           reverse=True)
-        [a,b]=map(list, zip(*sorted_x))
-        l=a[0:top]
-        l.append('others')
-        x=b[0:top]
-        #sum up the values of melted bars
-        x.append(sum(b[top:len(b)]))
+        topSorted = sorted_x[:top]
+        topSorted.append(('other', sum(n for _, n in sorted_x[top:])))
+#        [a,b]=map(list, zip(*sorted_x))
+#        l=a[0:top]
+#        l.append('others')
+#        x=b[0:top]
+#        #sum up the values of melted bars
+#        x.append(sum(b[top:len(b)]))
     #no top given - use full data
     else:
-        x=data.values()
-        l=data.keys()
-
+        topSorted = data.items()
+#        l,x= map(list, zip(*sorted_x))
+        
+    sorted_x = sorted(topSorted, key=operator.itemgetter(0),
+                          reverse=False)
+    l,x= map(list, zip(*sorted_x))
     #Convert values
     l=[s.decode('ISO-8859-1') for s in l]
     #build svg
@@ -85,13 +94,14 @@ def createPieChart(data,top=None):
     #top too big?
     if top>=len(data.values()):
         top=None
+    #sort dictionary in lists to melt the smallest wedges together
+    sorted_x = sorted(data.items(), key=operator.itemgetter(1),
+                      reverse=True)
+    a,b= map(list, zip(*sorted_x))
     #top given
     if top:
         top-=1#number of bars from data
-        #sort dictionary in lists to melt the smallest wedges together
-        sorted_x = sorted(data.items(), key=operator.itemgetter(1),
-                          reverse=True)
-        [a,b]=map(list, zip(*sorted_x))
+        
         l=a[0:top]
         l.append('others')
         x=b[0:top]
@@ -99,8 +109,9 @@ def createPieChart(data,top=None):
         x.append(sum(b[top:len(b)]))
     #no top given - use full data
     else:
-        x=data.values()
-        l=data.keys()
+        l=a
+        x=b
+        
 
     #Convert values
     l=[s.decode('ISO-8859-1') for s in l]
