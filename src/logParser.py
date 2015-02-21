@@ -7,7 +7,6 @@ Module containing the parser object handling the parsing of the logfiles.
 """
 
 import time
-import codecs
 import re
 
 NAME = 0
@@ -197,8 +196,6 @@ class LogParser(object):
         with open(self.fileName) as parsedFile:
             for line in parsedFile:
                 lineValid = True
-#                    
-#                lineAr = line.replace('"','').split(' ')
                 lineRes = completeReg.search(line)
                 if lineRes == None:
                     invalidLines.append(line)
@@ -272,10 +269,10 @@ class LogParser(object):
                             else:
                                 files = None
                             if files == None:
-                                if res[cat].has_key("-"):
-                                    res[cat]["-"] += 1
+                                if res[cat].has_key("Unknown"):
+                                    res[cat]["Unknown"] += 1
                                 else:
-                                    res[cat]["-"] = 1
+                                    res[cat]["Unknown"] = 1
                             else:
                                 if res[cat].has_key(files.group()):
                                     res[cat][files.group()] += 1
@@ -362,8 +359,8 @@ class LogParser(object):
         #TODO remove later
         print "Parsing took {} seconds <br>".format(time.time()-start)    
         print "Number of invalid lines {} <br>".format(len(invalidLines))
-        for l in invalidLines:
-            print l + '<br>'            
+#        for l in invalidLines:
+#            print l + '<br>'            
         return res, invalidLines
 
                 

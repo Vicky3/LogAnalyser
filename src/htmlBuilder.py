@@ -108,7 +108,7 @@ class HtmlBuilder:
         TypeError
             If the content is not a String or StringIO.
         """
-        if isinstance(content, basestring) \
+        if isinstance(content, unicode) \
         or isinstance(content, StringIO.StringIO):
             if len(self._content)==0:
                 self._content.append((None,[content]))
@@ -141,7 +141,9 @@ class HtmlBuilder:
             body.appendChild(h1)
         #print notifications
         for n in self._notifications:
-            n1=doc.createTextNode("NOTE: "+n)
+            if not isinstance(n, unicode):
+                n = n.decode('utf-8', errors='ignore')
+            n1=doc.createTextNode("NOTE: " +n)
             br=doc.createElement("br")
             body.appendChild(n1)
             body.appendChild(br)
@@ -167,7 +169,7 @@ class HtmlBuilder:
                 td.appendChild(h2)
             #content
             for co in c[1]:
-                if isinstance(co, basestring):
+                if isinstance(co, unicode):
                     #can be a simple string...
                     content=doc.createTextNode(co)
                 else:

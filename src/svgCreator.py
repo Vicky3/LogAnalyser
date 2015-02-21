@@ -59,7 +59,7 @@ def createBarChart(data,top=None,num=0):
                           reverse=False)
     l,x= map(list, zip(*sorted_x))
     #Convert values
-    l=[s.decode('ISO-8859-1') for s in l]
+    l=[s.encode('utf-8').decode('utf-8') for s in l]
     #build svg
     xpos=range(len(x))#pos of left bottom edge of bars
     xlpos=[n+0.4 for n in xpos]#pos of labels
@@ -115,7 +115,7 @@ def createPieChart(data,top=None,num=0):
         
 
     #Convert values
-    l=[s.decode('ISO-8859-1') for s in l]
+    l=[s.encode('utf-8', errors='ignore').decode('utf-8') for s in l]
     #build svg
     plot.pie(x, explode=None, labels=l, colors=('b', 'g', 'r', 'c', 'm', 'y', 'w'), shadow=True,startangle=90,
              counterclock=False)
