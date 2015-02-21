@@ -226,10 +226,16 @@ class LogParser(object):
                 if lineValid:
                     for cat in self.categories:
                         if cat in [NAME, PROTOCOL, RECTYPE]:
-                            if res[cat].has_key(lineAr[cat]):
-                                res[cat][lineAr[cat]] += 1
+                            if lineAr[cat] == None:                                    
+                                if res[cat].has_key("Unknown"):
+                                    res[cat]["Unknown"] += 1
+                                else:
+                                    res[cat]["Unknown"] = 1
                             else:
-                                res[cat][lineAr[cat]] = 1
+                                if res[cat].has_key(lineAr[cat]):
+                                    res[cat][lineAr[cat]] += 1
+                                else:
+                                    res[cat][lineAr[cat]] = 1
                         elif cat == PROGRAM:
                             pString = lineAr[cat].split(' ')[0]
                             if res[cat].has_key(pString):
