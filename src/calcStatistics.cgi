@@ -15,7 +15,7 @@ TODO finish doc when script grows!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #print "Content-Type: text/html"
 print "Content_Type: text/plain"
 print
-#print "<TITLE>Log Analyser - Result</TITLE>"
+print "<TITLE>Log Analyser - Result</TITLE>"
 #print "<H1>Your results:</H1>"
 
 import cgi,cgitb

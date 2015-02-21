@@ -13,11 +13,6 @@ import xml.sax.saxutils
 
 class HtmlBuilder:
 
-#    __START_HTML="<!DOCTYPE html>\n<html>\n<head>\n<title>"
-#    __END_HEADER_START_BODY="</title>\n</head>\n<body>\n<h1>"
-#    __START_TABLE='</h1>\n<table style="width:100%">'
-#    __END_TABLE_AND_HTML="</table>\n</body>\n</html>"
-
     def __init__(self,title=None):
         """
         Constructor for the HtmlBuilder
@@ -172,7 +167,6 @@ class HtmlBuilder:
                     content=doc.createTextNode(co)
                 else:
                     #...or a StringIO with an svg in it
-                    #content=dom.parseString(co.getvalue().replace("\n","")).childNodes[0]
                     content=doc.createTextNode(co.getvalue())
                 td.appendChild(content)
                 br=doc.createElement("br")
@@ -183,4 +177,5 @@ class HtmlBuilder:
         body.appendChild(table)
         site.appendChild(body)
 
-        return xml.sax.saxutils.unescape(site.toprettyxml(encoding="utf-8"),{"&quot;":'"'})
+        return xml.sax.saxutils.unescape(site.toprettyxml(encoding="utf-8"),
+                                         {"&quot;":'"'})
