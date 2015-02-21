@@ -12,7 +12,7 @@ import matplotlib.pyplot as plot
 import operator
 import StringIO
 
-def createBarChart(data,top=None):
+def createBarChart(data,top=None,num=0):
     """
     Creates a bar chart.
 
@@ -72,9 +72,10 @@ def createBarChart(data,top=None):
     #write svg to StringIO
     f=StringIO.StringIO()
     plot.savefig(f, format="svg")
+    plot.close()
     return f
 
-def createPieChart(data,top=None):
+def createPieChart(data,top=None,num=0):
     """
     Creates a pie chart.
 
@@ -126,5 +127,6 @@ def createPieChart(data,top=None):
     #write svg to StringIO
     f=StringIO.StringIO()
     plot.savefig(f, format="svg")
+    plot.close()
     return f
     #print f.getvalue()

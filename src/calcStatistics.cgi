@@ -16,10 +16,11 @@ TODO finish doc when script grows!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 print "Content_Type: text/plain"
 print
 print "<TITLE>Log Analyser - Result</TITLE>"
-print "<H1>Your results:</H1>"
+#print "<H1>Your results:</H1>"
 
 import cgi,cgitb
 import time
+import htmlBuilder
 import logParser
 import svgCreator
 
@@ -56,15 +57,15 @@ def giveArgumentsToParser(params):
             date1=time.strptime(params["cdate1"].value.lstrip().rstrip(),
                           "%d/%b/%Y")
         except ValueError:
-            print "NOTE: First date does not have the valid format. " + \
-                "Will not use a filter here."
+            hBuilder.addNotification("First date does not have the " + \
+                "valid format. Will not use a filter here.")
     if "cdate2" in params:
         try:
             date2=time.strptime(params["cdate2"].value.lstrip().rstrip(),
                           "%d/%b/%Y")
         except ValueError:
-            print "NOTE: Second date does not have the valid format. " + \
-                "Will not use a filter here."
+            hBuilder.addNotification("Second date does not have the " + \
+                "valid format. Will not use a filter here.")
     if date1 or date2:
         filters.append((logParser.DATE,date1,date2))
 
@@ -160,8 +161,10 @@ def makeSVGs(dataToPlot):
 
     #creation of the svgs (key: title - value: svg)
     dic={}
+    num=0
     for item in dataToPlot.items():
-        dic[titles[item[0]]]=chart[item[0]](item[1],top[item[0]])
+        dic[titles[item[0]]]=chart[item[0]](item[1],top[item[0]],num)
+        num+=1
     return dic
 
 #============================================================================
@@ -169,19 +172,25 @@ def makeSVGs(dataToPlot):
 #============================================================================
 #enables nice debugging information in browser when something goes wrong
 cgitb.enable()
-#parse arguments
-parsingRes=giveArgumentsToParser(cgi.FieldStorage()).parse()
 
-#print parsingRes
+hBuilder=htmlBuilder.HtmlBuilder("Log Analyser - Result")
+#parse arguments
+parsingRes,notifications=giveArgumentsToParser(cgi.FieldStorage()).parse()
+#TODO nots: list of strings
 
 #parsingRes={logParser.LANG:{"banane":3,"gurke":2,"hasen":5,"moehre":2},
 #            logParser.DATE:{"kaesekuchen":999,"schokokuchen":15}}
 #parsingRes={7: {'': 5, '200': 3, '301': 8, '-n': 3, '-': 21, 'target=_tools': 2, 'HTTP/1.0': 81244, 'HTTP/1.1': 55217}}
 #build svgs prom the parsed data
+for note in notifications:
+    hBuilder.addNotification(note)
 res=makeSVGs(parsingRes)
 
 #print len(res)
-#print res.keys()
 #print "test",res['protocol']
-for a in res.keys():
-    print res[a].getvalue()
+for k,v in res.items():
+    hBuilder.addHeadline(k)
+    hBuilder.addContent(v)
+    #print v.getvalue()
+
+print hBuilder.buildHtml()
