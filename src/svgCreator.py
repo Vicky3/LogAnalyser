@@ -12,7 +12,7 @@ import matplotlib.pyplot as plot
 import operator
 import StringIO
 
-def createBarChart(data,top=None,num=0):
+def createBarChart(data,top=None):
     """
     Creates a bar chart.
 
@@ -54,7 +54,7 @@ def createBarChart(data,top=None,num=0):
     else:
         topSorted = data.items()
 #        l,x= map(list, zip(*sorted_x))
-        
+
     sorted_x = sorted(topSorted, key=operator.itemgetter(0),
                           reverse=False)
     l,x= map(list, zip(*sorted_x))
@@ -75,7 +75,7 @@ def createBarChart(data,top=None,num=0):
     plot.close()
     return f
 
-def createPieChart(data,top=None,num=0):
+def createPieChart(data,top=None):
     """
     Creates a pie chart.
 
@@ -102,7 +102,7 @@ def createPieChart(data,top=None,num=0):
     #top given
     if top:
         top-=1#number of bars from data
-        
+
         l=a[0:top]
         l.append('others')
         x=b[0:top]
@@ -112,7 +112,7 @@ def createPieChart(data,top=None,num=0):
     else:
         l=a
         x=b
-        
+
 
     #Convert values
     l=[s.decode('ISO-8859-1') for s in l]
