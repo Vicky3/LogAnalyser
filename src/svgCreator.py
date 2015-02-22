@@ -39,7 +39,7 @@ def createBarChart(data,top=None):
     #top too big?
     if top>=len(data.values()):
         top=None
-        
+
     usedDates = False
     try:
         sorted_x = [(time.strptime(k, "%d/%b/%Y"), v) for k,v in data.items()]
@@ -62,7 +62,7 @@ def createBarChart(data,top=None):
 
     #sort by keys (e.g. alphabetically) Differentiate between dates and no dates
     if usedDates:
-        sorted_x = sorted(topSorted, key=operator.itemgetter(0), 
+        sorted_x = sorted(topSorted, key=operator.itemgetter(0),
                           reverse=False)
     else:
         sorted_x = sorted(topSorted, key=ak4,
@@ -115,7 +115,7 @@ def createPieChart(data,top=None):
 
     #top given
     if top:
-        top-=1#number of bars from data
+        top-=1#number of wedges from data
         l=a[0:top]
         l.append('others')
         x=b[0:top]
@@ -135,7 +135,7 @@ def createPieChart(data,top=None):
     if len(wedges)>7:
         hatch=["/","\\","x","o","O",".","*"]
         for i in range(7,len(wedges)):
-            wedges[i].set_hatch(hatch[i-7])
+            wedges[i].set_hatch(hatch[(i-7)%7])
         plt.draw()#needed for update
 
     #legend
