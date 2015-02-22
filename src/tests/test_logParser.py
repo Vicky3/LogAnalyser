@@ -86,91 +86,91 @@ class TestParserObject(unittest.TestCase):
     def test_parseProto(self):
         parser = logParser.LogParser(fileName = self.fileName)
         parser.addCategory(logParser.PROTOCOL)
-        res = parser.parse()
+        res, invalidLines = parser.parse()
         self.assertTrue(len(res)>0)
         self.assertEqual(res[logParser.PROTOCOL]["HTTP/1.1"], 14)
         
     def test_parseDate(self):
         parser = logParser.LogParser(fileName = self.fileName)
         parser.addCategory(logParser.DATE)
-        res = parser.parse()
+        res, invalidLines = parser.parse()
         self.assertTrue(len(res)>0)
         self.assertEqual(res[logParser.DATE]["01/Dec/2000"], 13)
         
     def test_parseIp(self):
         parser = logParser.LogParser(fileName = self.fileName)
         parser.addCategory(logParser.NAME)
-        res = parser.parse()
+        res, invalidLines = parser.parse()
         self.assertTrue(len(res)>0)
         self.assertEqual(res[logParser.NAME]["128.165.108.196"], 6)
         
     def test_parseTime(self):
         parser = logParser.LogParser(fileName = self.fileName)
         parser.addCategory(logParser.TIME)
-        res = parser.parse()
+        res, invalidLines = parser.parse()
         self.assertTrue(len(res)>0)
         self.assertEqual(res[logParser.TIME]["00"], 15)
         
     def test_parseFile(self):
         parser = logParser.LogParser(fileName = self.fileName)
         parser.addCategory(logParser.FILE)
-        res = parser.parse()
+        res, invalidLines = parser.parse()
         self.assertTrue(len(res)>0)
         self.assertEqual(res[logParser.FILE][".jpg"], 3)
         
     def test_parseRecType(self):
         parser = logParser.LogParser(fileName = self.fileName)
         parser.addCategory(logParser.RECTYPE)
-        res = parser.parse()
+        res, invalidLines = parser.parse()
         self.assertTrue(len(res)>0)
         self.assertEqual(res[logParser.RECTYPE]["POST"], 2)
         
     def test_parseStatus(self):
         parser = logParser.LogParser(fileName = self.fileName)
         parser.addCategory(logParser.STATUS)
-        res = parser.parse()
+        res, invalidLines = parser.parse()
         self.assertTrue(len(res)>0)
         self.assertEqual(res[logParser.STATUS]["300"], 5)
         
     def test_parseSize(self):
         parser = logParser.LogParser(fileName = self.fileName)
         parser.addCategory(logParser.SIZE)
-        res = parser.parse()
+        res, invalidLines = parser.parse()
         self.assertTrue(len(res)>0)
-        self.assertEqual(res[logParser.SIZE]["-"], 4)
+        self.assertEqual(res[logParser.SIZE]["Unknown"], 4)
         
     def test_parseRef(self):
         parser = logParser.LogParser(fileName = self.fileName)
         parser.addCategory(logParser.REF)
-        res = parser.parse()
+        res, invalidLines = parser.parse()
         self.assertTrue(len(res)>0)
         self.assertEqual(res[logParser.REF]["http://bibiserv.techfak.uni-bielefeld.de/genefisher/"], 4)
         
     def test_parseProg(self):
         parser = logParser.LogParser(fileName = self.fileName)
         parser.addCategory(logParser.PROGRAM)
-        res = parser.parse()
+        res, invalidLines = parser.parse()
         self.assertTrue(len(res)>0)
         self.assertEqual(res[logParser.PROGRAM]["Mozilla/4.51"], 3)
         
     def test_parseOs(self):
         parser = logParser.LogParser(fileName = self.fileName)
         parser.addCategory(logParser.OS)
-        res = parser.parse()
+        res, invalidLines = parser.parse()
         self.assertTrue(len(res)>0)
         self.assertEqual(res[logParser.OS]["Macintosh"], 3)
             
     def test_parseLang(self):
         parser = logParser.LogParser(fileName = self.fileName)
         parser.addCategory(logParser.LANG)
-        res = parser.parse()
+        res, invalidLines = parser.parse()
         self.assertTrue(len(res)>0)
         self.assertEqual(res[logParser.LANG]["Unknown"], 17)
         
     def test_parseTLD(self):
         parser = logParser.LogParser(fileName = self.fileName)
         parser.addCategory(logParser.TLD)
-        res = parser.parse()
+        res, invalidLines = parser.parse()
         self.assertTrue(len(res)>0)
         self.assertEqual(res[logParser.TLD]["edu"], 10)
         
@@ -178,7 +178,7 @@ class TestParserObject(unittest.TestCase):
         parser = logParser.LogParser(fileName = self.fileName)
         parser.addCategory(logParser.REF)
         parser.addCategory(logParser.PROGRAM)
-        res = parser.parse()
+        res, invalidLines = parser.parse()
         self.assertEqual(len(res),2)
         self.assertEqual(res[logParser.REF]["http://bibiserv.techfak.uni-bielefeld.de/genefisher/"], 4)
         self.assertEqual(res[logParser.PROGRAM]["Mozilla/4.51"], 3)
@@ -191,7 +191,7 @@ class TestParserObject(unittest.TestCase):
             
     def test_parseNoCategories(self):
         parser = logParser.LogParser(fileName = self.fileName)
-        res = parser.parse()
+        res, invalidLines = parser.parse()
         self.assertEqual(len(res),0)
     
 if __name__ == '__main__':

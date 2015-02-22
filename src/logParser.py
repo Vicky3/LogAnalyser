@@ -186,7 +186,7 @@ class LogParser(object):
             If no filename was specified but categories were specified. Or the file could not be opened.
         """
         if len(self.categories) == 0:
-            return {}
+            return {}, []
         if self.fileName == None:
             raise IOError("No file was specified.")
             
@@ -201,17 +201,20 @@ class LogParser(object):
                     invalidLines.append(line)
                     continue
                 lineAr = lineRes.groups()
-#                print lineAr
                 for f in self.filters:
                     if f[0] == DATE:
                         #Date needs to check for potentially 2 conditions
-                        dString = lineAr[DATE]
-                        dTime = time.strptime(dString, "%d/%b/%Y")
-                        if (f[1] != None and dTime < f[1]) or (f[2] != None and dTime > f[2]):
-                            lineValid = False
-                            break
+                        try:                            
+                            dTime = time.strptime(lineAr[DATE], "%d/%b/%Y")
+                        except:
+                            print "Invalid date format."
+                        else:
+                            if (f[1] != None and dTime < f[1]) or (f[2] != None and dTime > f[2]):
+                                lineValid = False
+                                break
                     elif f[0] == TLD:
                         #TLDs are part of the name
+                        #TODO maybe use regex here as well.
                         if lineAr[NAME][lineAr[NAME].rfind('.')+1:] != f[1]:
                             lineValid = False
                             break
@@ -246,7 +249,7 @@ class LogParser(object):
                                 else:
                                     res[cat][pString] = 1
                         elif cat == DATE:
-                            dString = lineAr[DATE][0:11]
+                            dString = lineAr[DATE]
                             if res[cat].has_key(dString):
                                 res[cat][dString] += 1
                             else:
@@ -264,8 +267,8 @@ class LogParser(object):
                                 else:
                                     res[cat][hString] = 1
                         elif cat == FILE:
-                            if lineAr[FILE] != None:
-                                files = fileRegex.search(lineAr[FILE])
+                            if lineAr[cat] != None:
+                                files = fileRegex.search(lineAr[cat])
                             else:
                                 files = None
                             if files == None:
@@ -285,35 +288,31 @@ class LogParser(object):
                             else:
                                 res[cat][lineAr[STATUS][0]+'00'] = 1
                         elif cat == SIZE:
-                            sString = lineAr[SIZE]
 #                            print sString
-                            if sString == None or sString == '-':
+                            if lineAr[cat] == None or lineAr[cat] == '-':
                                 if res[cat].has_key("Unknown"):
                                     res[cat]["Unknown"] += 1
                                 else:
                                     res[cat]["Unknown"] = 1
                             else:
                                 #Slow way
-                                size = int(sString)
-                                binNr = size/binSize
+                                binNr = int(lineAr[cat])/binSize
                                 binString = str(binNr*binSize+1) +'-' +str((binNr+1)*binSize) 
                                 if res[cat].has_key(binString):
                                     res[cat][binString] += 1
                                 else:
                                     res[cat][binString] = 1
                         elif cat == REF:
-                            refString = lineAr[REF] if lineAr[REF] != None else ""
-                            refRes = refRegex.search(refString)
-                            if refRes == None:
+                            if lineAr[cat] == None or lineAr[cat] == "-":
                                 if res[cat].has_key("Unknown"):
                                     res[cat]["Unknown"] += 1
                                 else:
                                     res[cat]["Unknown"] = 1
                             else:
-                                if res[cat].has_key(refRes.group()):
-                                    res[cat][refRes.group()] += 1
+                                if res[cat].has_key(lineAr[cat]):
+                                    res[cat][lineAr[cat]] += 1
                                 else:
-                                    res[cat][refRes.group()] = 1
+                                    res[cat][lineAr[cat]] = 1
                         elif cat == OS:
                             osString = lineAr[PROGRAM] if lineAr[PROGRAM] != None else ""
                             isRes= osRegex.search(osString)
@@ -358,9 +357,6 @@ class LogParser(object):
                                             
         #TODO remove later
         print "Parsing took {} seconds <br>".format(time.time()-start)    
-        print "Number of invalid lines {} <br>".format(len(invalidLines))
-#        for l in invalidLines:
-#            print l + '<br>'            
         return res, invalidLines
 
                 

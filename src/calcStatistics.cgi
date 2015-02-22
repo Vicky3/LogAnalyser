@@ -137,19 +137,19 @@ def makeSVGs(dataToPlot):
 
     #mapping of titles for the plots depending on categories
     #TODO create nice titles
-    titles={logParser.NAME:"name",
-            logParser.DATE:"date",
-            logParser.TIME:"time",
-            logParser.PROTOCOL:"protocol",
-            logParser.FILE:"file",
-            logParser.RECTYPE:"rectype",
-            logParser.STATUS:"status",
-            logParser.SIZE:"size",
-            logParser.REF:"ref",
-            logParser.PROGRAM:"program",
-            logParser.OS:"os",
-            logParser.LANG:"lang",
-            logParser.TLD:"tld"}
+    titles={logParser.NAME:"IP Adress/Name",
+            logParser.DATE:"Date of request",
+            logParser.TIME:"Time of request",
+            logParser.PROTOCOL:"Used Protocol",
+            logParser.FILE:"Requested File",
+            logParser.RECTYPE:"Request Type",
+            logParser.STATUS:"Request Status",
+            logParser.SIZE:"Size of requested object",
+            logParser.REF:"Referenz path",
+            logParser.PROGRAM:"Requesting program",
+            logParser.OS:"Used operating system",
+            logParser.LANG:"Used language",
+            logParser.TLD:"Top-Level-Domain"}
 
     #how many wedges/bars should be created depending on category
     #(None for as much as in data)
@@ -176,6 +176,7 @@ hBuilder=htmlBuilder.HtmlBuilder("Log Analyser - Result")
 #parse arguments
 parsingRes,notifications=createParserWithArguments(cgi.FieldStorage()).parse()
 #notifications concerning invalid lines
+hBuilder.addNotification("Number of invalid lines: " + str(len(notifications)))
 for note in notifications:
     hBuilder.addNotification("Invalid line: "+note)
 
