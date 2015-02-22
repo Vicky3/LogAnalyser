@@ -5,9 +5,9 @@ Created on Mon Feb 16 14:37:52 2015
 
 Main script started by the website.
 Will give arguments to parser and start parsing. The results are given to the
-svgCreator to create pie/bar charts.
-
-TODO finish doc when script grows!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+svgCreator to create pie/bar charts. These charts as well as some information
+for the user are given to the htmlBuilder to get a nice output, that is
+finally printed.
 
 @author: adreyer
 """
