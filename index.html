@@ -1,60 +1,65 @@
-
-
 <html>
 	<head>
 		<title>Log Analyser</title>
 	</head>
 	<body>
+		<h1>Welcome to Log Analyser!</h1>
 		<form action="src/calcStatistics.cgi" method="POST">
-		<fieldset>
-			<legend>Search criteria:</legend>
-			Range of days: from <input type="TEXT" name="cdate1"> to <input type="TEXT" name="cdate2"> Format: 16/Feb/2015 <br/>
-			Contain IP/name: <input type="TEXT" name="cname"> <br/>
-			Used protocol: <input type="TEXT" name="cprotocol"> <br/>
-			Used Top-Level-Domain: <input type="TEXT" name="ctld"> <br/>
-			Referer HTTP: <input type="TEXT" name="cref">
-		</fieldset>
-		<fieldset>
-			<legend>What statistics do you want?</legend>
-			<SCRIPT LANGUAGE="JavaScript">
-				function CheckAll(chk)
-				{
-					for (i = 0; i < chk.length; i++)
-						chk[i].checked = true ;
-				}
+			<fieldset>
+				<legend>Search criteria:</legend>
+				Range of days: from <input type="TEXT" name="cdate1"> to <input type="TEXT" name="cdate2"> Format: 16/Feb/2015
+				<hr/>
+				The following filter queries will be searched anywhere in the corresponding string, not only at the beginning.<br/>
+				IP/name: <input type="TEXT" name="cname"> <br/>
+				Used protocol: <input type="TEXT" name="cprotocol"> <br/>
+				Used Top-Level-Domain: <input type="TEXT" name="ctld"> <br/>
+				Referer HTTP: <input type="TEXT" name="cref">
+				<hr/>
+				For pie charts - maximum number of wedges: <input type="TEXT" name="cnum"> (leave empty for default, type 'None' for as many as possible)
+			</fieldset>
+			<p/>
+			<fieldset>
+				<legend>What statistics would you like to see?</legend>
+				<SCRIPT LANGUAGE="JavaScript">
+					function CheckAll(chk)
+					{
+						for (i = 0; i < chk.length; i++)
+							chk[i].checked = true ;
+					}
+					function UnCheckAll(chk)
+					{
+						for (i = 0; i < chk.length; i++)
+							chk[i].checked = false ;
+					}
+				</script>
+				<input type="checkbox" name="stat" value="sname">IP address (name) of client<br/>
+				<input type="checkbox" name="stat" value="sdate">date<br/>
+				<input type="checkbox" name="stat" value="stime">time<br/>
+				<input type="checkbox" name="stat" value="sprotocol">used protocol<br/>
+				<input type="checkbox" name="stat" value="sfile">file ending of requested file<br/>
+				<input type="checkbox" name="stat" value="sget">request type<br/>
+				<input type="checkbox" name="stat" value="sstatus">status codes<br/>
+				<input type="checkbox" name="stat" value="ssize">size of returned object<br/>
+				<input type="checkbox" name="stat" value="sreferer">referer HTTP (up to second /)<br/>
+				<input type="checkbox" name="stat" value="sprogram">program (e.g. browser)<br/>
+				<input type="checkbox" name="stat" value="sos">OS<br/>
+				<input type="checkbox" name="stat" value="slanguage">language used by program<br/>
+				<input type="checkbox" name="stat" value="stld">Top-Level-Domain<br/>
 
-				function UnCheckAll(chk)
-				{
-					for (i = 0; i < chk.length; i++)
-						chk[i].checked = false ;
-				}
-			</script>
-			<input type="checkbox" name="stat" value="sname">IP address (name) of client<br/>
-			<input type="checkbox" name="stat" value="sdate">date<br/>
-			<input type="checkbox" name="stat" value="stime">time<br/>
-			<input type="checkbox" name="stat" value="sprotocol">used protocol<br/>
-			<input type="checkbox" name="stat" value="sfile">file ending of requested file<br/>
-			<input type="checkbox" name="stat" value="sget">Request type<br/>
-			<input type="checkbox" name="stat" value="sstatus">status codes<br/>
-			<input type="checkbox" name="stat" value="ssize">size of returned object<br/>
-			<input type="checkbox" name="stat" value="sreferer">Referer HTTP (up to second /)<br/>
-			<input type="checkbox" name="stat" value="sprogram">program (e.g. browser)<br/>
-			<input type="checkbox" name="stat" value="sos">OS<br/>
-			<input type="checkbox" name="stat" value="slanguage">language used by program<br/>
-			<input type="checkbox" name="stat" value="stld">Top-Level-Domain<br/>
-
-			<input type="button" name="Check_All" value="Check All" onClick="CheckAll(stat)">
-			<input type="button" name="Un_CheckAll" value="Uncheck All" onClick="UnCheckAll(stat)">
-		</fieldset>
-		<select name="log">
-			<option value="large">large.log</option>
-			<option value="medium">medium.log</option>
-			<option value="micro_1" selected>micro_1.log</option>
-			<option value="micro_2">micro_2.log</option>
-			<option value="small">small.log</option>
-		</select>
-		<input type="SUBMIT"/>
-		<input type="RESET"/>
+				<input type="button" name="Check_All" value="Check All" onClick="CheckAll(stat)">
+				<input type="button" name="Un_CheckAll" value="Uncheck All" onClick="UnCheckAll(stat)">
+			</fieldset>
+			Choose your file:
+			<select name="log">
+				<option value="large">large.log</option>
+				<option value="medium">medium.log</option>
+				<option value="micro_1" selected>micro_1.log</option>
+				<option value="micro_2">micro_2.log</option>
+				<option value="small">small.log</option>
+			</select>
+			<br/>
+			<input type="SUBMIT" value="Create statistics"/>
+			<input type="RESET" value="Reset"/>
 		</form>
 	</body>
 </html>

@@ -5,9 +5,9 @@ Created on Mon Feb 16 14:37:52 2015
 
 Main script started by the website.
 Will give arguments to parser and start parsing. The results are given to the
-svgCreator to create pie/bar charts.
-
-TODO finish doc when script grows!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+svgCreator to create pie/bar charts. These charts as well as some information
+for the user are given to the htmlBuilder to get a nice output, that is
+finally printed.
 
 @author: adreyer
 """
@@ -78,6 +78,15 @@ def createParserWithArguments(params):
         filters.append((logParser.TLD,params["ctld"].value))
     if "cref" in params:
         filters.append((logParser.REF,params["cref"].value))
+    if "cnum" in params:
+        global numberOfWedges
+        if params["cnum"].value.isdigit():
+            numberOfWedges=int(params["cnum"].value)
+        elif params["cnum"].value=="None":
+            numberOfWedges=None
+        else:
+            hBuilder.addNotification("The given number of wedges is not "+\
+                "a valid number. Will not use a filter here.")
 
     #create parser
     parser=logParser.LogParser(logfile,filters)
@@ -155,14 +164,17 @@ def makeSVGs(dataToPlot):
     #(None for as much as in data)
     top={logParser.NAME:14, logParser.DATE:None, logParser.TIME:None,
          logParser.PROTOCOL:7, logParser.FILE:7, logParser.RECTYPE:7,
-         logParser.STATUS:7, logParser.SIZE:7, logParser.REF:7,
+         logParser.STATUS:7, logParser.SIZE:20, logParser.REF:7,
          logParser.PROGRAM:7, logParser.OS:14, logParser.LANG:7,
          logParser.TLD:14}
 
     #creation of the svgs (key: title - value: svg)
     dic={}
     for k,v in dataToPlot.items():
-        dic[titles[k]]=chart[k](v,top[k])
+        if numberOfWedges == -1 or chart[k]==svgCreator.createBarChart:
+            dic[titles[k]]=chart[k](v,top[k])
+        else:
+            dic[titles[k]]=chart[k](v,numberOfWedges)
     return dic
 
 #============================================================================
@@ -172,6 +184,7 @@ def makeSVGs(dataToPlot):
 cgitb.enable()
 
 hBuilder=htmlBuilder.HtmlBuilder("Log Analyser - Result")
+numberOfWedges=-1
 
 #parse arguments
 parsingRes,notifications=createParserWithArguments(cgi.FieldStorage()).parse()
@@ -187,5 +200,5 @@ res=makeSVGs(parsingRes)
 for k,v in res.items():
     hBuilder.addHeadline(k)
     hBuilder.addContent(v)
-
+#show HTML site
 print hBuilder.buildHtml()

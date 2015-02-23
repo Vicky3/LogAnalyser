@@ -71,13 +71,13 @@ class TestHtmlBuilder(unittest.TestCase):
             builder.addHeadline(headline)
 
     def test_addContentText(self):
-        content="Very important stuff"
+        content=u"Very important stuff"
         builder=htmlBuilder.HtmlBuilder()
         builder.addHeadline("Topic 1")
         builder.addContent(content)
         self.assertEqual(len(builder._content[0][1]),1)
         self.assertEqual(builder._content[0][1][0],content)
-        content2="Even more important stuff"
+        content2=u"Even more important stuff"
         builder.addContent(content2)
         self.assertEqual(len(builder._content[0][1]),2)
         self.assertEqual(builder._content[0][1][1],content2)
@@ -100,14 +100,14 @@ class TestHtmlBuilder(unittest.TestCase):
             builder.addHeadline(content)
 
     def test_addContentWithNoHeadline(self):
-        content="Very important stuff"
+        content=u"Very important stuff"
         builder=htmlBuilder.HtmlBuilder()
         builder.addContent(content)
         self.assertEqual(len(builder._content),1)
         self.assertEqual(builder._content[0][1][0],content)
         headline="Topic 1"
         builder.addHeadline(headline)
-        content2="Even more important stuff"
+        content2=u"Even more important stuff"
         builder.addContent(content2)
         self.assertEqual(len(builder._content),2)
         self.assertEqual(builder._content[1][0],headline)
@@ -117,10 +117,10 @@ class TestHtmlBuilder(unittest.TestCase):
         title="A Title"
         notification="A failure occured. Please check input!"
         headline="A nice headline"
-        content="Very important stuff"
-        content2="Even more important stuff"
+        content=u"Very important stuff"
+        content2=u"Even more important stuff"
         headline2="Another headline"
-        content3="Some more stuff (not really important)"
+        content3=u"Some more stuff (not really important)"
         builder=htmlBuilder.HtmlBuilder()
         builder.setTitle(title)
         builder.addNotification(notification)
@@ -141,9 +141,9 @@ class TestHtmlBuilder(unittest.TestCase):
             tmp = f.read()
         content=StringIO.StringIO()
         content.write(tmp)
-        content2="Even more important stuff"
+        content2=u"Even more important stuff"
         headline2="Another headline"
-        content3="Some more stuff (not really important)"
+        content3=u"Some more stuff (not really important)"
         builder=htmlBuilder.HtmlBuilder()
         builder.setTitle(title)
         builder.addHeadline(headline)

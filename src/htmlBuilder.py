@@ -147,6 +147,9 @@ class HtmlBuilder:
         newline=True
         table=doc.createElement("table")
         table.setAttribute("style","width:100%")
+        table.setAttribute("border","3")
+        table.setAttribute("frame","void")
+        table.setAttribute("rules","rows")
         for c in self._content:
             #two columns
             if newline:
@@ -156,6 +159,7 @@ class HtmlBuilder:
                 table.appendChild(tr)
                 newline=True
             td=doc.createElement("td")
+            td.setAttribute("valign","top")
             #if headline is set - write it
             if c[0]:
                 h2=doc.createElement("h2")
