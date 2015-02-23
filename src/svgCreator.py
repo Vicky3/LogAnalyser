@@ -15,7 +15,21 @@ import time
 import re
 
 NUM_RE = re.compile('([0-9]+)')
-def ak4(s):
+def humanLikeSorting(s):
+    """
+    Auxilliary function that splits alphanumerical strings into ints and strings to allow more
+    human like sorting.
+    
+    Parameters
+    ----------
+    s : String
+        The String that is to be split
+        
+    Returns
+    -------
+    list of ints and strings
+        The split list.
+    """
     s = s[0]
     return [ int(c) if c.isdigit() else c for c in NUM_RE.split(s) ]
 
@@ -65,7 +79,7 @@ def createBarChart(data,top=None):
         sorted_x = sorted(topSorted, key=operator.itemgetter(0),
                           reverse=False)
     else:
-        sorted_x = sorted(topSorted, key=ak4,
+        sorted_x = sorted(topSorted, key=humanLikeSorting,
                           reverse=False)
     l,x= map(list, zip(*sorted_x))
 

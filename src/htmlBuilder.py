@@ -163,8 +163,11 @@ class HtmlBuilder:
             #if headline is set - write it
             if c[0]:
                 h2=doc.createElement("h2")
+                h2span = doc.createElement("span")
+                h2span.setAttribute("style", "margin:0; border-bottom: 3px  solid black;")
                 th2=doc.createTextNode(c[0])
-                h2.appendChild(th2)
+                h2span.appendChild(th2)
+                h2.appendChild(h2span)
                 td.appendChild(h2)
             #content
             for co in c[1]:
