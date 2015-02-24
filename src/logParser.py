@@ -187,6 +187,8 @@ class LogParser(object):
             A dictionary for each category where the keys correspond to the found category bins and the values
             contain the number of occurence. Each dictionary is stored with the corresponding categoryType
             as key in the outer dictionary.
+        list of Strings
+            A list containing all lines that could not be matched at all (invalid format/characters)
             
         Raises
         ------
@@ -248,24 +250,93 @@ class LogParser(object):
         
          
     def _defaultHelper(self, lineAr, cat):
+        """
+        Helping function that returns the key for the default categories 
+        (NAME, PROTOCOL and RECTYPE).
+        
+        Parameters
+        ----------
+        lineAr : list of Strings
+            Split list containing all groups found by the regex previously.
+        cat : int
+            Category number that is to be analysed.
+            
+        Returns
+        -------
+        String
+            Unknown, if the category string could not be found, or was not present.
+            The category string from the line otherwise.
+        
+        """
         if lineAr[cat] == None or lineAr[cat] == "-":
             return "Unknown"
         else:
             return lineAr[cat]
         
     def _programHelper(self, lineAr, cat):
+        """
+        Helping function that returns the key for the program category.
+        
+        Parameters
+        ----------
+        lineAr : list of Strings
+            Split list containing all groups found by the regex previously.
+        cat : int
+            Category number that is to be analysed.
+            
+        Returns
+        -------
+        String
+            Unknown, if the category string could not be found, or was not present.
+            The category string from the line otherwise.
+        
+        """
         if lineAr[cat] == None or lineAr[cat] == "-":
             return "Unknown"
         else:
             return lineAr[cat].split(' ')[0]
         
     def _timeHelper(self, lineAr, cat):
+        """
+        Helping function that returns the key for the time category.
+        
+        Parameters
+        ----------
+        lineAr : list of Strings
+            Split list containing all groups found by the regex previously.
+        cat : int
+            Category number that is to be analysed.
+            
+        Returns
+        -------
+        String
+            Unknown, if the category string could not be found, or was not present.
+            The category string from the line otherwise.
+        
+        """
         if lineAr[cat] == None or lineAr[cat] == "-":
             return "Unknown"
         else:
             return lineAr[TIME][:2]
         
     def _fileHelper(self, lineAr, cat):
+        """
+        Helping function that returns the key for the file category.
+        
+        Parameters
+        ----------
+        lineAr : list of Strings
+            Split list containing all groups found by the regex previously.
+        cat : int
+            Category number that is to be analysed.
+            
+        Returns
+        -------
+        String
+            Unknown, if the category string could not be found, or was not present.
+            The category string from the line otherwise.
+        
+        """
         files = fileRegex.search(lineAr[cat] if lineAr[cat] != None else "")
         if files == None:
             return "Unknown"
@@ -273,12 +344,46 @@ class LogParser(object):
             return files.group()
         
     def _statusHelper(self, lineAr, cat):
+        """
+        Helping function that returns the key for the status category.
+        
+        Parameters
+        ----------
+        lineAr : list of Strings
+            Split list containing all groups found by the regex previously.
+        cat : int
+            Category number that is to be analysed.
+            
+        Returns
+        -------
+        String
+            Unknown, if the category string could not be found, or was not present.
+            The category string from the line otherwise.
+        
+        """
         if lineAr[cat] == None or lineAr[cat] == "-":
             return "Unknown"
         else:
             return lineAr[STATUS][0] + '00'
 
     def _sizeHelper(self, lineAr, cat):
+        """
+        Helping function that returns the key for the size category.
+        
+        Parameters
+        ----------
+        lineAr : list of Strings
+            Split list containing all groups found by the regex previously.
+        cat : int
+            Category number that is to be analysed.
+            
+        Returns
+        -------
+        String
+            Unknown, if the category string could not be found, or was not present.
+            The category string from the line otherwise.
+        
+        """
         #Might be improvable
         if lineAr[cat] == None or lineAr[cat] == "-":
             return "Unknown"
@@ -287,6 +392,23 @@ class LogParser(object):
             return str(binNr*binSize+1) +'-' +str((binNr+1)*binSize) 
         
     def _refHelper(self, lineAr, cat):
+        """
+        Helping function that returns the key for the reference category.
+        
+        Parameters
+        ----------
+        lineAr : list of Strings
+            Split list containing all groups found by the regex previously.
+        cat : int
+            Category number that is to be analysed.
+            
+        Returns
+        -------
+        String
+            Unknown, if the category string could not be found, or was not present.
+            The category string from the line otherwise.
+        
+        """
         refRes = refRegex.search(lineAr[cat] if lineAr[cat] != None else "")
         if refRes == None:
             return "Unknown"
@@ -294,6 +416,23 @@ class LogParser(object):
             return refRes.group()
         
     def _osHelper(self, lineAr, cat):
+        """
+        Helping function that returns the key for the operating system category.
+        
+        Parameters
+        ----------
+        lineAr : list of Strings
+            Split list containing all groups found by the regex previously.
+        cat : int
+            Category number that is to be analysed.
+            
+        Returns
+        -------
+        String
+            Unknown, if the category string could not be found, or was not present.
+            The category string from the line otherwise.
+        
+        """
         isRes= osRegex.search(lineAr[PROGRAM] if lineAr[PROGRAM] != None else "")
         if isRes == None:
             return "Unknown"
@@ -302,6 +441,23 @@ class LogParser(object):
             
             
     def _langHelper(self, lineAr, cat):
+        """
+        Helping function that returns the key for the language category.
+        
+        Parameters
+        ----------
+        lineAr : list of Strings
+            Split list containing all groups found by the regex previously.
+        cat : int
+            Category number that is to be analysed.
+            
+        Returns
+        -------
+        String
+            Unknown, if the category string could not be found, or was not present.
+            The category string from the line otherwise.
+        
+        """
         lanRes = lanRegex.search(lineAr[PROGRAM] if lineAr[PROGRAM] != None else "")
         if lanRes == None:
             return "Unknown"
@@ -309,6 +465,23 @@ class LogParser(object):
             return lanRes.groups()[0]
         
     def _tldHelper(self, lineAr, cat):
+        """
+        Helping function that returns the key for the top-level-domain category.
+        
+        Parameters
+        ----------
+        lineAr : list of Strings
+            Split list containing all groups found by the regex previously.
+        cat : int
+            Category number that is to be analysed.
+            
+        Returns
+        -------
+        String
+            Unknown, if the category string could not be found, or was not present.
+            The category string from the line otherwise.
+        
+        """
         tlds = tldRegex.search(lineAr[NAME] if lineAr[NAME] != None else "")
         if tlds == None:
             return "Unknown"
