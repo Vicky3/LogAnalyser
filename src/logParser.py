@@ -24,7 +24,7 @@ REF =  11
 PROGRAM = 12
 OS = 14
 LANG = 13
-TLD = 1
+TLD = 15
 
 
 binSize = 100
@@ -34,7 +34,8 @@ tldRegex = re.compile(r"\.([a-z,A-Z]+)$")
 osRegex = re.compile(r"\(.*(Macintosh|Win[^;\)]+|Sun[^;\)]+|IO[^;\)]+)[;\s\)]")
 lanRegex = re.compile(r" \[([a-z,A-Z]{2})\] ")
 
-completeReg = re.compile(r"(\S+) (\S+) (\S+) \[([^:]+):(\d+:\d+:\d+) ([^\]]+)\] \"(?:(?:(\S+) (.*?)(?:(?: (\S+)\")|(?:\")))|(?:.\")) (\S+) (\S+) \"(.*)\" \"(.*)\"$")
+completeReg = re.compile(r"(\S+) (\S+) (\S+) \[([^:]+):(\d+:\d+:\d+) ([^\]]+)\] \"(?:(?:(\S+) "+ \
+                            "(.*?)(?:(?: (\S+)\")|(?:\")))|(?:.\")) (\S+) (\S+) \"(.*)\" \"(.*)\"$")
 ALLOWEDFILTERTYPES = [NAME, DATE, PROTOCOL, REF, TLD]
 ALLOWEDCATEGORYTYPES = [NAME, DATE, TIME, PROTOCOL, FILE, RECTYPE, STATUS, SIZE, REF, PROGRAM, OS, LANG, TLD]
 
@@ -65,6 +66,13 @@ class LogParser(object):
         self.categories = []
         self.addFilters(filters)
         self.setFile(fileName)
+        self.catMap = {NAME: self._defaultHelper, PROTOCOL: self._defaultHelper, 
+                       RECTYPE: self._defaultHelper, DATE: self._defaultHelper,
+                       PROGRAM: self._programHelper, TIME: self._timeHelper, 
+                       FILE: self._fileHelper, STATUS: self._statusHelper,
+                       SIZE: self._sizeHelper, REF: self._refHelper, 
+                       OS: self._osHelper, LANG: self._langHelper, TLD: self._tldHelper}
+        
     
     def addFilter(self, fil):
         """
@@ -196,7 +204,7 @@ class LogParser(object):
         with open(self.fileName) as parsedFile:
             for line in parsedFile:
                 lineValid = True
-                lineRes = completeReg.search(line)
+                lineRes = completeReg.match(line)
                 if lineRes == None:
                     invalidLines.append(line)
                     continue
@@ -225,139 +233,87 @@ class LogParser(object):
                             break
                 if lineValid:
                     for cat in self.categories:
-                        if cat in [NAME, PROTOCOL, RECTYPE]:
-                            if lineAr[cat] == None:                                    
-                                if res[cat].has_key("Unknown"):
-                                    res[cat]["Unknown"] += 1
-                                else:
-                                    res[cat]["Unknown"] = 1
-                            else:
-                                if res[cat].has_key(lineAr[cat]):
-                                    res[cat][lineAr[cat]] += 1
-                                else:
-                                    res[cat][lineAr[cat]] = 1
-                        elif cat == PROGRAM:
-                            if lineAr[cat] == None:                                    
-                                if res[cat].has_key("Unknown"):
-                                    res[cat]["Unknown"] += 1
-                                else:
-                                    res[cat]["Unknown"] = 1
-                            else:
-                                pString = lineAr[cat].split(' ')[0]
-                                if res[cat].has_key(pString):
-                                    res[cat][pString] += 1
-                                else:
-                                    res[cat][pString] = 1
-                        elif cat == DATE:
-                            dString = lineAr[DATE]
-                            if res[cat].has_key(dString):
-                                res[cat][dString] += 1
-                            else:
-                                res[cat][dString] = 1
-                        elif cat == TIME:
-                            if lineAr[cat] == None:                                    
-                                if res[cat].has_key("Unknown"):
-                                    res[cat]["Unknown"] += 1
-                                else:
-                                    res[cat]["Unknown"] = 1
-                            else:
-                                hString = lineAr[TIME][:2]
-                                if res[cat].has_key(hString):
-                                    res[cat][hString] += 1
-                                else:
-                                    res[cat][hString] = 1
-                        elif cat == FILE:
-                            if lineAr[cat] != None:
-                                files = fileRegex.search(lineAr[cat])
-                            else:
-                                files = None
-                            if files == None:
-                                if res[cat].has_key("Unknown"):
-                                    res[cat]["Unknown"] += 1
-                                else:
-                                    res[cat]["Unknown"] = 1
-                            else:
-                                if res[cat].has_key(files.group()):
-                                    res[cat][files.group()] += 1
-                                else:
-                                    res[cat][files.group()] = 1
-                        elif cat == STATUS:
-                            
-                            if res[cat].has_key(lineAr[STATUS][0]+'00'):
-                                res[cat][lineAr[STATUS][0]+'00'] += 1
-                            else:
-                                res[cat][lineAr[STATUS][0]+'00'] = 1
-                        elif cat == SIZE:
-#                            print sString
-                            if lineAr[cat] == None or lineAr[cat] == '-':
-                                if res[cat].has_key("Unknown"):
-                                    res[cat]["Unknown"] += 1
-                                else:
-                                    res[cat]["Unknown"] = 1
-                            else:
-                                #Slow way
-                                binNr = int(lineAr[cat])/binSize
-                                binString = str(binNr*binSize+1) +'-' +str((binNr+1)*binSize) 
-                                if res[cat].has_key(binString):
-                                    res[cat][binString] += 1
-                                else:
-                                    res[cat][binString] = 1
-                        elif cat == REF:
-                            if lineAr[cat] == None or lineAr[cat] == "-":
-                                if res[cat].has_key("Unknown"):
-                                    res[cat]["Unknown"] += 1
-                                else:
-                                    res[cat]["Unknown"] = 1
-                            else:
-                                if res[cat].has_key(lineAr[cat]):
-                                    res[cat][lineAr[cat]] += 1
-                                else:
-                                    res[cat][lineAr[cat]] = 1
-                        elif cat == OS:
-                            osString = lineAr[PROGRAM] if lineAr[PROGRAM] != None else ""
-                            isRes= osRegex.search(osString)
-                            if isRes == None:
-                                if res[cat].has_key("Unknown"):
-                                    res[cat]["Unknown"] += 1
-                                else:
-                                    res[cat]["Unknown"] = 1
-                            else:
-                                if res[cat].has_key(isRes.groups()[0]):
-                                    res[cat][isRes.groups()[0]] += 1
-                                else:
-                                    res[cat][isRes.groups()[0]] = 1
-                        elif cat == LANG:
-                            lanString = lineAr[PROGRAM] if lineAr[PROGRAM] != None else ""
-                            lanRes = lanRegex.search(lanString)
-                            if lanRes == None:
-                                if res[cat].has_key("Unknown"):
-                                    res[cat]["Unknown"] += 1
-                                else:
-                                    res[cat]["Unknown"] = 1
-                            else:
-                                if res[cat].has_key(lanRes.groups()[0]):
-                                    res[cat][lanRes.groups()[0]] += 1
-                                else:
-                                    res[cat][lanRes.groups()[0]] = 1
-                                
-                        elif cat == TLD:
-                            tlds = tldRegex.search(lineAr[NAME])
-                            if tlds == None:
-                                if res[cat].has_key("Unknown"):
-                                    res[cat]["Unknown"] += 1
-                                else:
-                                    res[cat]["Unknown"] = 1
-                            else:
-                                if res[cat].has_key(tlds.groups()[0]):
-                                    res[cat][tlds.groups()[0]] += 1
-                                else:
-                                    res[cat][tlds.groups()[0]] = 1
+                        #Deal with fields that were not present
+                        #Deal with category specifics
+                        key = self.catMap[cat](lineAr, cat)
+                        if res[cat].has_key(key):
+                            res[cat][key] += 1
                         else:
-                            raise TypeError("Invalid category", cat)
-                                            
+                            res[cat][key] = 1
+#                        
+                                                
         #TODO remove later
         print "Parsing took {} seconds <br>".format(time.time()-start)    
         return res, invalidLines
+        
+         
+    def _defaultHelper(self, lineAr, cat):
+        if lineAr[cat] == None or lineAr[cat] == "-":
+            return "Unknown"
+        else:
+            return lineAr[cat]
+        
+    def _programHelper(self, lineAr, cat):
+        if lineAr[cat] == None or lineAr[cat] == "-":
+            return "Unknown"
+        else:
+            return lineAr[cat].split(' ')[0]
+        
+    def _timeHelper(self, lineAr, cat):
+        if lineAr[cat] == None or lineAr[cat] == "-":
+            return "Unknown"
+        else:
+            return lineAr[TIME][:2]
+        
+    def _fileHelper(self, lineAr, cat):
+        files = fileRegex.search(lineAr[cat] if lineAr[cat] != None else "")
+        if files == None:
+            return "Unknown"
+        else:
+            return files.group()
+        
+    def _statusHelper(self, lineAr, cat):
+        if lineAr[cat] == None or lineAr[cat] == "-":
+            return "Unknown"
+        else:
+            return lineAr[STATUS][0] + '00'
+
+    def _sizeHelper(self, lineAr, cat):
+        #Might be improvable
+        if lineAr[cat] == None or lineAr[cat] == "-":
+            return "Unknown"
+        else:
+            binNr = int(lineAr[cat])/binSize
+            return str(binNr*binSize+1) +'-' +str((binNr+1)*binSize) 
+        
+    def _refHelper(self, lineAr, cat):
+        refRes = refRegex.search(lineAr[cat] if lineAr[cat] != None else "")
+        if refRes == None:
+            return "Unknown"
+        else:
+            return refRes.group()
+        
+    def _osHelper(self, lineAr, cat):
+        isRes= osRegex.search(lineAr[PROGRAM] if lineAr[PROGRAM] != None else "")
+        if isRes == None:
+            return "Unknown"
+        else:
+            return isRes.groups()[0]
+            
+            
+    def _langHelper(self, lineAr, cat):
+        lanRes = lanRegex.search(lineAr[PROGRAM] if lineAr[PROGRAM] != None else "")
+        if lanRes == None:
+            return "Unknown"
+        else:
+            return lanRes.groups()[0]
+        
+    def _tldHelper(self, lineAr, cat):
+        tlds = tldRegex.search(lineAr[NAME] if lineAr[NAME] != None else "")
+        if tlds == None:
+            return "Unknown"
+        else:
+            return tlds.groups()[0]
 
                 
         
