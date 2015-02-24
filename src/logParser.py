@@ -9,6 +9,7 @@ Module containing the parser object handling the parsing of the logfiles.
 import time
 import re
 
+#Category values. These values correspond to the index of the split line array in most cases.
 NAME = 0
 USER = 2
 DATE = 3
@@ -17,17 +18,18 @@ TIMEZONE = 5
 RECTYPE = 6
 FILE = 7
 PROTOCOL = 8
-
-STATUS = 9
 SIZE = 10
+STATUS = 9
 REF =  11
 PROGRAM = 12
+#These three categories to not correspond to indices since they are not always present/extractable.
 OS = 14
 LANG = 13
 TLD = 15
 
 
 binSize = 100
+
 fileRegex = re.compile(r"/*\.[a-z,A-Z]+$")
 refRegex = re.compile(r"([a-z,A-Z]+://[^/]+/[^/]+/)")
 tldRegex = re.compile(r"\.([a-z,A-Z]+)$")
@@ -37,7 +39,8 @@ lanRegex = re.compile(r" \[([a-z,A-Z]{2})\] ")
 completeReg = re.compile(r"(\S+) (\S+) (\S+) \[([^:]+):(\d+:\d+:\d+) ([^\]]+)\] \"(?:(?:(\S+) "+ \
                             "(.*?)(?:(?: (\S+)\")|(?:\")))|(?:.\")) (\S+) (\S+) \"(.*)\" \"(.*)\"$")
 ALLOWEDFILTERTYPES = [NAME, DATE, PROTOCOL, REF, TLD]
-ALLOWEDCATEGORYTYPES = [NAME, DATE, TIME, PROTOCOL, FILE, RECTYPE, STATUS, SIZE, REF, PROGRAM, OS, LANG, TLD]
+ALLOWEDCATEGORYTYPES = [NAME, DATE, TIME, PROTOCOL, FILE, RECTYPE, 
+                        STATUS, SIZE, REF, PROGRAM, OS, LANG, TLD]
 
 class LogParser(object):
     
@@ -123,8 +126,9 @@ class LogParser(object):
         ----------
         cat : CategoryType
             CategoryType my be any of (logParser.NAME, logParser.DATE, logParser.TIME, 
-            logParser.PROTOCOL, logParser..FILE, logParser.RECTYPE, logParser.STATUS, logParser.SIZE,
-            logParser.REF, logParser.PROGRAM, logParser.OS, logParser.LANG logParser.TLD).
+            logParser.PROTOCOL, logParser..FILE, logParser.RECTYPE, logParser.STATUS, 
+            logParser.SIZE, logParser.REF, logParser.PROGRAM, logParser.OS, 
+            logParser.LANG, logParser.TLD).
         
         Raises
         ------
@@ -145,8 +149,9 @@ class LogParser(object):
         ----------
         catList : list of CategoryType
             CategoryType my be any of (logParser.NAME, logParser.DATE, logParser.TIME, 
-            logParser.PROTOCOL, logParser..FILE, logParser.RECTYPE, logParser.STATUS, logParser.SIZE,
-            logParser.REF, logParser.PROGRAM, logParser.OS, logParser.LANG logParser.TLD).
+            logParser.PROTOCOL, logParser..FILE, logParser.RECTYPE, logParser.STATUS, 
+            logParser.SIZE, logParser.REF, logParser.PROGRAM, logParser.OS, 
+            logParser.LANG logParser.TLD).
         
         Raises
         ------
@@ -164,7 +169,8 @@ class LogParser(object):
         Parameters
         ----------
         fileName : String
-            String containing the complete filename, including the path to the file that should be parsed.
+            String containing the complete filename, including the path to the file 
+            that should be parsed.
             
         Raises
         ------
@@ -184,16 +190,17 @@ class LogParser(object):
         Returns
         -------
         dic of dicts
-            A dictionary for each category where the keys correspond to the found category bins and the values
-            contain the number of occurence. Each dictionary is stored with the corresponding categoryType
-            as key in the outer dictionary.
+            A dictionary for each category where the keys correspond to the found category 
+            bins and the values contain the number of occurence. Each dictionary is stored 
+            with the corresponding categoryType as key in the outer dictionary.
         list of Strings
             A list containing all lines that could not be matched at all (invalid format/characters)
             
         Raises
         ------
         IOError
-            If no filename was specified but categories were specified. Or the file could not be opened.
+            If no filename was specified but categories were specified. 
+            Or the file could not be opened.
         """
         if len(self.categories) == 0:
             return {}, []
@@ -203,15 +210,18 @@ class LogParser(object):
         res = {cat: {} for cat in self.categories}
         invalidLines = []
         start = time.time()
+        cats = self.categories
+        fils = self.filters
         with open(self.fileName) as parsedFile:
             for line in parsedFile:
                 lineValid = True
                 lineRes = completeReg.match(line)
+                #If the line could not be matched, we deem it invalid (wrong format/invalid chars)
                 if lineRes == None:
                     invalidLines.append(line)
                     continue
                 lineAr = lineRes.groups()
-                for f in self.filters:
+                for f in fils:
                     if f[0] == DATE:
                         #Date needs to check for potentially 2 conditions
                         try:                            
@@ -234,13 +244,14 @@ class LogParser(object):
                             lineValid = False
                             break
                 if lineValid:
-                    for cat in self.categories:
-                        #Deal with fields that were not present
-                        #Deal with category specifics
+                    for cat in cats:
+                        #Get key for the category with helper functions
                         key = self.catMap[cat](lineAr, cat)
-                        if res[cat].has_key(key):
+#                        if res[cat].has_key(key):
+                        try:
                             res[cat][key] += 1
-                        else:
+#                        else:
+                        except KeyError:
                             res[cat][key] = 1
 #                        
                                                 
@@ -389,7 +400,7 @@ class LogParser(object):
             return "Unknown"
         else:
             binNr = int(lineAr[cat])/binSize
-            return str(binNr*binSize+1) +'-' +str((binNr+1)*binSize) 
+            return "{}-{}".format(str(binNr*binSize+1),str((binNr+1)*binSize)) 
         
     def _refHelper(self, lineAr, cat):
         """
@@ -458,6 +469,10 @@ class LogParser(object):
             The category string from the line otherwise.
         
         """
+#        try:
+#            return lanRegex.search(lineAr[PROGRAM]).groups()[0]
+#        except (TypeError,AttributeError):
+#            return "Unknown"
         lanRes = lanRegex.search(lineAr[PROGRAM] if lineAr[PROGRAM] != None else "")
         if lanRes == None:
             return "Unknown"
@@ -482,11 +497,22 @@ class LogParser(object):
             The category string from the line otherwise.
         
         """
+#        try:
+#            return tldRegex.search(lineAr[NAME]).groups()[0]
+#        except (TypeError, AttributeError):
+#            return "Unknown"
         tlds = tldRegex.search(lineAr[NAME] if lineAr[NAME] != None else "")
+        
         if tlds == None:
             return "Unknown"
         else:
             return tlds.groups()[0]
+            
+if __name__=="__main__":
+    import profile
+    parser=LogParser("../logs/large.log",[])
+    parser.addCategories(ALLOWEDCATEGORYTYPES)
+    profile.run('parser.parse()')
 
                 
         
