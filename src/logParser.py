@@ -8,6 +8,7 @@ Module containing the parser object handling the parsing of the logfiles.
 
 import time
 import re
+from collections import defaultdict
 
 #Category values. These values correspond to the index of the split line array in most cases.
 NAME = 0
@@ -207,7 +208,7 @@ class LogParser(object):
         if self.fileName == None:
             raise IOError("No file was specified.")
             
-        res = {cat: {} for cat in self.categories}
+        res = {cat: defaultdict(int) for cat in self.categories}
         invalidLines = []
         start = time.time()
         cats = self.categories
@@ -234,7 +235,6 @@ class LogParser(object):
                                 break
                     elif f[0] == TLD:
                         #TLDs are part of the name
-                        #TODO maybe use regex here as well.
                         if lineAr[NAME][lineAr[NAME].rfind('.')+1:] != f[1]:
                             lineValid = False
                             break
@@ -247,13 +247,7 @@ class LogParser(object):
                     for cat in cats:
                         #Get key for the category with helper functions
                         key = self.catMap[cat](lineAr, cat)
-#                        if res[cat].has_key(key):
-                        try:
-                            res[cat][key] += 1
-#                        else:
-                        except KeyError:
-                            res[cat][key] = 1
-#                        
+                        res[cat][key] += 1
                                                 
         #TODO remove later
         print "Parsing took {} seconds <br>".format(time.time()-start)    
@@ -375,7 +369,7 @@ class LogParser(object):
         if lineAr[cat] == None or lineAr[cat] == "-":
             return "Unknown"
         else:
-            return lineAr[STATUS][0] + '00'
+            return "%s00" % lineAr[STATUS][0]
 
     def _sizeHelper(self, lineAr, cat):
         """
@@ -400,7 +394,7 @@ class LogParser(object):
             return "Unknown"
         else:
             binNr = int(lineAr[cat])/binSize
-            return "{}-{}".format(str(binNr*binSize+1),str((binNr+1)*binSize)) 
+            return "%i-%i" % (binNr*binSize+1,(binNr+1)*binSize) 
         
     def _refHelper(self, lineAr, cat):
         """
@@ -469,10 +463,6 @@ class LogParser(object):
             The category string from the line otherwise.
         
         """
-#        try:
-#            return lanRegex.search(lineAr[PROGRAM]).groups()[0]
-#        except (TypeError,AttributeError):
-#            return "Unknown"
         lanRes = lanRegex.search(lineAr[PROGRAM] if lineAr[PROGRAM] != None else "")
         if lanRes == None:
             return "Unknown"
@@ -497,10 +487,6 @@ class LogParser(object):
             The category string from the line otherwise.
         
         """
-#        try:
-#            return tldRegex.search(lineAr[NAME]).groups()[0]
-#        except (TypeError, AttributeError):
-#            return "Unknown"
         tlds = tldRegex.search(lineAr[NAME] if lineAr[NAME] != None else "")
         
         if tlds == None:
@@ -510,7 +496,7 @@ class LogParser(object):
             
 if __name__=="__main__":
     import profile
-    parser=LogParser("../logs/large.log",[])
+    parser=LogParser("../logs/micro_1.log",[])
     parser.addCategories(ALLOWEDCATEGORYTYPES)
     profile.run('parser.parse()')
 
