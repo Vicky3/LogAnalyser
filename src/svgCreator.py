@@ -13,6 +13,7 @@ import operator
 import StringIO
 import time
 import re
+import pkg_resources
 
 NUM_RE = re.compile('([0-9]+)')
 def humanLikeSorting(s):
@@ -143,8 +144,12 @@ def createPieChart(data,top=None):
     #Convert values
     l=[s.encode('utf-8', errors='ignore').decode('utf-8') for s in l]
     #build svg
-    wedges = plt.pie(x, explode=None, colors=('b','g','r','c','m','y','w'),
-                     shadow=True, startangle=90, counterclock=False)[0]
+    if pkg_resources.get_distribution("matplotlib").version < "1.4":
+        wedges = plt.pie(x, explode=None, colors=('b','g','r','c','m','y','w'),
+                         shadow=True, startangle=90)[0]
+    else:
+        wedges = plt.pie(x, explode=None, colors=('b','g','r','c','m','y','w'),
+                         shadow=True, startangle=90, counterclock=False)[0]
     #differentiate between wedges
     if len(wedges)>7:
         hatch=["/","\\","x","o","O",".","*"]

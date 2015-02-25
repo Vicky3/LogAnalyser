@@ -1,5 +1,5 @@
 # Log Analyser
-23/02/2015
+25/02/2015
 
 ## General usage
 - Use a browser to go to the set address/port (depending on the mini_httpd configuration, or the -p parameter set in the run_mini_httpd.sh)
@@ -13,7 +13,7 @@
     - Change the DATADIR to the root directory of the project (where the index.html is located)
     - Change the -c parameter to 'src/*cgi'
 - Log files need to be located in the "logs" directory in the root directoy of the project
-- matplotlib 1.4.3: Use pip (pip install matplotlib) or download sources: http://matplotlib.org/downloads.html
+- matplotlib 1.3.1 or higher: Use pip (pip install matplotlib) or download sources: http://matplotlib.org/downloads.html (1.3.1 is installed on the netboot machines)
     - Earlier versions might work, but is not guaranteed.
 
 ## Authors
