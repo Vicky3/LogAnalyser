@@ -15,9 +15,3 @@
 - Log files need to be located in the "logs" directory in the root directoy of the project
 - matplotlib 1.3.1 or higher: Use pip (pip install matplotlib) or download sources: http://matplotlib.org/downloads.html (1.3.1 is installed on the netboot machines)
     - Earlier versions might work, but is not guaranteed.
-
-## Authors
-Adriana-Victoria Dreyer | adreyer@techfak.uni-bielefeld.de
-
-Jan Pöppel | jpoeppel@techfak.uni-bielefeld.de
-
